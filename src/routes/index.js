@@ -1,6 +1,6 @@
 const route = require('express').Router();
-const responseHandler = require('../helpers/responseHandler');
 
-route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
+route.use('/', require('./home'));
+route.use('/promo', require('./promo'));
 
 module.exports = route;
