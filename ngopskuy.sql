@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2022 at 01:48 PM
+-- Generation Time: Mar 09, 2022 at 04:50 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.3.33
 
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Database: `ngopskuy`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `category`
+--
+
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -43,6 +56,7 @@ CREATE TABLE `delivery_type` (
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `id_category` int(11) NOT NULL,
   `description` text NOT NULL,
   `stock` int(11) NOT NULL,
   `delivery_hour_start` time NOT NULL,
@@ -228,6 +242,12 @@ INSERT INTO `user_role` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 --
+-- Indexes for table `category`
+--
+ALTER TABLE `category`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
@@ -237,7 +257,8 @@ ALTER TABLE `delivery_type`
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_category` (`id_category`);
 
 --
 -- Indexes for table `product_delivery_type`
@@ -317,6 +338,12 @@ ALTER TABLE `user_role`
 --
 
 --
+-- AUTO_INCREMENT for table `category`
+--
+ALTER TABLE `category`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
@@ -391,6 +418,12 @@ ALTER TABLE `user_role`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product_delivery_type`
