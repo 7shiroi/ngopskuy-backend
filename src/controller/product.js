@@ -147,6 +147,13 @@ exports.editProduct = (req, res) => {
     if (getData.length < 1) {
       return responseHandler(res, 404, null, null, 'Data not found', null);
     }
+    // Check if product exist
+    if (data.name) {
+      const getDataByName = await productModel.getProductByName(data.name);
+      if (getDataByName.length > 0 && getDataByName[0].id !== parseInt(id, 10)) {
+        return responseHandler(res, 400, null, null, 'Product already on the list', null);
+      }
+    }
     const editData = await productModel.editProduct(data, id);
     if (editData.affectedRows < 1) {
       return responseHandler(res, 500, null, null, 'Server error', null);
@@ -165,7 +172,7 @@ exports.deleteProduct = async (req, res) => {
     return responseHandler(res, 400, null, null, 'Undefined ID', null);
   }
   if (id < 1 || Number.isNaN(Number(id))) {
-    return responseHandler(res, 400, null, null, 'ID should be a number greater than 0');
+    return responseHandler(res, 400, null, null, 'ID should be a number greater than 0', null);
   }
   const getDataProduct = await productModel.getProductById(id);
   if (getDataProduct.length < 1) {
