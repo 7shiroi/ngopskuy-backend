@@ -35,7 +35,7 @@ exports.editCategory = async (req, res) => {
   if (!id) {
     return responseHandler(res, 400, null, null, 'Please input category id', null);
   }
-  if (id < 1 || isNaN(id)) {
+  if (id < 1 || Number.isNaN(Number(id))) {
     return responseHandler(res, 400, null, null, 'ID Should be a number greater than 0', null);
   }
   if (!name) {
@@ -68,7 +68,7 @@ exports.deleteCategory = async (req, res) => {
   if (!id) {
     return responseHandler(res, 400, null, null, 'Undefined ID', null);
   }
-  if (id < 1 || isNaN(id)) {
+  if (id < 1 || Number.isNaN(Number(id))) {
     return responseHandler(res, 400, null, null, 'ID Should be a number greater than 0', null);
   }
   const checkCategory = await categoryModel.getCategoryId(id); // Check if id exist
