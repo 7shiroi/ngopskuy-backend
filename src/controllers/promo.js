@@ -13,12 +13,12 @@ exports.getPromo = async (req, res) => {
   try {
     const results = await promoModel.getPromo();
     if (results.length > 0) {
-      responseHandler(res, 'List of promo', results);
+      responseHandler(res, 200, 'List of promo', results);
     } else {
-      responseHandler(res, 'Data not found', null, null, null, 404);
+      responseHandler(res, 404, 'Data not found', null, null, null);
     }
   } catch (err) {
-    responseHandler(res, 'Unexpeceted error', null, err, null, 500);
+    responseHandler(res, 500, 'Unexpeceted error', null, err, null);
   }
 };
 
@@ -57,19 +57,19 @@ exports.postPromo = async (req, res) => {
     data.dateStart = req.body.dateStart;
     data.dateEnd = req.body.dateEnd;
     if (error.length > 0) {
-      return responseHandler(res, 'Bad request', null, error, null, 400);
+      return responseHandler(res, 400, 'Bad request', null, error, null);
     }
     const isOnlyOne = await promoModel.isOnlyOne(data);
     if (isOnlyOne.length === 0) {
       const result = await promoModel.postPromo(data);
       if (result.affectedRows === 1) {
-        return responseHandler(res, 'Insert Successfully');
+        return responseHandler(res, 200, 'Insert Successfully');
       }
-      return responseHandler(res, 'Inserted failed', null, null, null, 500);
+      return responseHandler(res, 400, 'Inserted failed', null, null, null);
     }
-    responseHandler(res, 'Input failed. name and code Promo has been input', null, null, null, 400);
+    responseHandler(res, 400, 'Input failed. name and code Promo has been input', null, null, null);
   } catch (err) {
-    return responseHandler(res, 'Unexpected Error', null, err, null, 500);
+    return responseHandler(res, 500, 'Unexpected Error', null, err, null);
   }
 };
 
@@ -82,7 +82,7 @@ exports.patchPromo = async (req, res) => {
     const nameP = req.query.name;
     const produk = await promoModel.getProduk(id, nameP);
     if (produk.length !== 1) {
-      return responseHandler(res, 'Produk not found. cek your id and name', null, null, null, 404);
+      return responseHandler(res, 404, 'Produk not found. cek your id and name', null, null, null);
     }
     const fillable = [
       {
@@ -108,20 +108,20 @@ exports.patchPromo = async (req, res) => {
     dateEnd = validator.dateValidation(req.body.dateEnd);
     const { error, data } = validator.inputValidator(req, fillable);
     if (!dateStart || !dateEnd) {
-      return responseHandler(res, 'cek input date', null, null, null, 400);
+      return responseHandler(res, 400, 'cek input date', null, null, null);
     }
     data.dateStart = req.body.dateStart;
     data.dateEnd = req.body.dateEnd;
     if (error.length > 0) {
-      return responseHandler(res, 'Bad request', null, error, null, 400);
+      return responseHandler(res, 400, 'Bad request', null, error, null);
     }
     const update = await promoModel.updatePromo(data, id);
     if (update.affectedRows === 1) {
-      responseHandler(res, 'Updated successfully');
+      responseHandler(res, 200, 'Updated successfully');
     }
-    responseHandler(res, 'Updated failed', null, null, null, 500);
+    responseHandler(res, 400, 'Updated failed', null, null, null);
   } catch (err) {
-    responseHandler(res, 'Unexpected error', null, err, null, 500);
+    responseHandler(res, 400, 'Unexpected error', null, err, null);
   }
 };
 
@@ -129,16 +129,15 @@ exports.deletePromo = async (req, res) => {
   try {
     const { id, name } = req.query;
     const produk = await promoModel.getProduk(id, name);
-    console.log(produk);
     if (produk.length === 1) {
       const result = await promoModel.deletePromo(id);
       if (result.affectedRows === 1) {
-        responseHandler(res, 'Deleted successfully', produk[0]);
+        return responseHandler(res, 200, 'Deleted successfully', produk[0]);
       }
-      responseHandler(res, 500, 'Deleted failed', null, null, 500);
+      return responseHandler(res, 500, 'Deleted failed', null, null);
     }
-    responseHandler(res, 'Data not found', null, null, null, 404);
+    return responseHandler(res, 404, 'Data not found', null, null, null);
   } catch (err) {
-    responseHandler(res, 'Unexpected error', null, err, null, 500);
+    return responseHandler(res, 500, 'Unexpected error', null, err, null);
   }
 };
