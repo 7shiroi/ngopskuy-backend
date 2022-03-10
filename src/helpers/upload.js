@@ -21,7 +21,7 @@ const storage = new CloudinaryStorage({
       }
       return `ngopskuy/uploads/${baseUrl}`;
     },
-    format: async () => 'png', // supports promises as well
+    format: async () => 'png',
     public_id: (req) => {
       const timestamp = Date.now();
       let { baseUrl } = req;
