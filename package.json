@@ -13,10 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "argon2": "^0.28.5",
+    "cloudinary": "^1.28.1",
     "dotenv": "^16.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.4",
+    "multer-storage-cloudinary": "^4.0.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.15"
   },
