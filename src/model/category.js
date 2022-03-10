@@ -14,6 +14,13 @@ exports.getCategoryId = (id) => new Promise((resolve, reject) => {
   });
 });
 
+exports.getCategoryByName = (name) => new Promise((resolve, reject) => {
+  db.query(`SELECT * FROM category WHERE name='${name}'`, (err, res) => {
+    if (err) { reject(err); }
+    resolve(res);
+  });
+});
+
 exports.addCategory = (name) => new Promise((resolve, reject) => {
   db.query(`INSERT INTO category (name) VALUES('${name}')`, (err, res) => {
     if (err) { reject(err); }
