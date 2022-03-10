@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2022 at 01:48 PM
+-- Generation Time: Mar 10, 2022 at 09:58 AM
 -- Server version: 10.4.22-MariaDB
--- PHP Version: 7.3.33
+-- PHP Version: 8.0.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,10 +24,62 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `category`
+--
+
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Coffee', '2022-03-10 07:43:03', '2022-03-10 11:24:53'),
+(2, 'Non Coffee', '2022-03-10 07:45:51', NULL),
+(3, 'Food', '2022-03-10 08:14:51', NULL),
+(4, 'Add-on', '2022-03-10 08:15:13', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `delivery_type`
 --
 
 CREATE TABLE `delivery_type` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `otp`
+--
+
+CREATE TABLE `otp` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_otp_type` int(11) NOT NULL,
+  `code` varchar(6) NOT NULL,
+  `is_expired` tinyint(4) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `otp_type`
+--
+
+CREATE TABLE `otp_type` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -43,14 +95,33 @@ CREATE TABLE `delivery_type` (
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `idCategory` int(11) NOT NULL,
+  `price` int(11) NOT NULL,
   `description` text NOT NULL,
   `stock` int(11) NOT NULL,
-  `delivery_hour_start` time NOT NULL,
-  `delivery_hour_end` time NOT NULL,
+  `deliveryHourStart` time NOT NULL,
+  `deliveryHourEnd` time NOT NULL,
   `image` text NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+  `isDeleted` tinyint(4) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `product`
+--
+
+INSERT INTO `product` (`id`, `name`, `idCategory`, `price`, `description`, `stock`, `deliveryHourStart`, `deliveryHourEnd`, `image`, `isDeleted`, `createdAt`, `updatedAt`) VALUES
+(1, 'Cold Brew', 1, 30000, 'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.', 5, '13:00:00', '19:00:00', 'http://localhost:5000/uploads/image 25-1646875823113-146237612.jpg', 0, '2022-03-10 08:30:23', '2022-03-10 13:31:02'),
+(2, 'Veggie Tomato Mix', 3, 34000, '', 5, '07:00:00', '11:00:00', 'http://localhost:5000/uploads/image2-1646890449180-384596200.jpg', 0, '2022-03-10 12:34:09', '2022-03-10 12:34:39'),
+(3, 'Summer Fried rice', 1, 30000, '', 10, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/image22-1646894602486-330873420.jpg', 0, '2022-03-10 12:35:47', '2022-03-10 15:26:56'),
+(4, 'Summer Fried rice', 3, 30000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/image22-1646894402636-418300410.jpg', 1, '2022-03-10 12:37:34', '2022-03-10 15:04:43'),
+(5, 'Corn Dog', 3, 28000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646892477669-857655176.jpg', 0, '2022-03-10 13:07:57', NULL),
+(6, 'Mocca Frappuccino', 1, 33000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/mocha-frappuccino-1-720x405-1646901141080-190642062.jpg', 0, '2022-03-10 13:09:56', '2022-03-10 15:32:21'),
+(7, 'Thai Tea', 2, 29000, '', 5, '10:00:00', '21:00:00', 'http://localhost:5000/uploads/thai-tea-pearl-1646902192843-854382295.jpg', 0, '2022-03-10 14:01:21', '2022-03-10 15:57:01'),
+(8, 'Capuccino', 1, 30000, '', 5, '03:00:00', '09:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646895703154-191146590.jpg', 0, '2022-03-10 14:01:43', NULL),
+(9, 'Capuccino', 1, 30000, '', 5, '17:00:00', '17:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646897060885-864528680.jpg', 0, '2022-03-10 14:24:20', NULL),
+(10, 'Capuccino', 1, 30000, '', 5, '17:00:00', '21:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646897086329-321456096.jpg', 0, '2022-03-10 14:24:46', NULL);
 
 -- --------------------------------------------------------
 
@@ -228,16 +299,37 @@ INSERT INTO `user_role` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 --
+-- Indexes for table `category`
+--
+ALTER TABLE `category`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `otp`
+--
+ALTER TABLE `otp`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`,`id_otp_type`),
+  ADD KEY `id_otp_type` (`id_otp_type`);
+
+--
+-- Indexes for table `otp_type`
+--
+ALTER TABLE `otp_type`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_category` (`idCategory`);
 
 --
 -- Indexes for table `product_delivery_type`
@@ -317,16 +409,34 @@ ALTER TABLE `user_role`
 --
 
 --
+-- AUTO_INCREMENT for table `category`
+--
+ALTER TABLE `category`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `otp`
+--
+ALTER TABLE `otp`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `otp_type`
+--
+ALTER TABLE `otp_type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `product_delivery_type`
@@ -391,6 +501,19 @@ ALTER TABLE `user_role`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `otp`
+--
+ALTER TABLE `otp`
+  ADD CONSTRAINT `otp_ibfk_1` FOREIGN KEY (`id_otp_type`) REFERENCES `otp_type` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `otp_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`idCategory`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product_delivery_type`
