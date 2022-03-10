@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2022 at 01:48 PM
+-- Generation Time: Mar 09, 2022 at 05:11 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.3.33
 
@@ -24,10 +24,52 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `category`
+--
+
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `delivery_type`
 --
 
 CREATE TABLE `delivery_type` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `otp`
+--
+
+CREATE TABLE `otp` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_otp_type` int(11) NOT NULL,
+  `code` varchar(6) NOT NULL,
+  `is_expired` tinyint(4) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `otp_type`
+--
+
+CREATE TABLE `otp_type` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -43,6 +85,7 @@ CREATE TABLE `delivery_type` (
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `id_category` int(11) NOT NULL,
   `description` text NOT NULL,
   `stock` int(11) NOT NULL,
   `delivery_hour_start` time NOT NULL,
@@ -228,16 +271,37 @@ INSERT INTO `user_role` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 --
+-- Indexes for table `category`
+--
+ALTER TABLE `category`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `otp`
+--
+ALTER TABLE `otp`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`,`id_otp_type`),
+  ADD KEY `id_otp_type` (`id_otp_type`);
+
+--
+-- Indexes for table `otp_type`
+--
+ALTER TABLE `otp_type`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_category` (`id_category`);
 
 --
 -- Indexes for table `product_delivery_type`
@@ -317,9 +381,27 @@ ALTER TABLE `user_role`
 --
 
 --
+-- AUTO_INCREMENT for table `category`
+--
+ALTER TABLE `category`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `otp`
+--
+ALTER TABLE `otp`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `otp_type`
+--
+ALTER TABLE `otp_type`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -391,6 +473,19 @@ ALTER TABLE `user_role`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `otp`
+--
+ALTER TABLE `otp`
+  ADD CONSTRAINT `otp_ibfk_1` FOREIGN KEY (`id_otp_type`) REFERENCES `otp_type` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `otp_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product_delivery_type`
