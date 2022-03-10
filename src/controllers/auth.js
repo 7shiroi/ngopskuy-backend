@@ -1,10 +1,12 @@
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const userModel = require('../models/user');
+const otp = require('../models/forgotPass');
+const mail = require('../helpers/mail');
+
+const { APP_SECRET, APP_EMAIL } = process.env;
 const responseHandler = require('../helpers/responseHandler');
 const { inputValidator, comparePassword } = require('../helpers/validator');
-const userModel = require('../models/user');
-
-const { APP_SECRET } = process.env;
 
 exports.login = async (req, res) => {
   const fillable = [
@@ -78,6 +80,135 @@ exports.register = async (req, res) => {
       return responseHandler(res, 201, 'Register successful');
     }
     return responseHandler(res, 500, null, null, 'Unexpected Error');
+  } catch (error) {
+    return responseHandler(res, 500, null, null, 'Unexpected Error');
+  }
+};
+
+exports.forgotPass = async (req, res) => {
+  const idOtpType = 2;
+  const {
+    email, code, password, confirmPass,
+  } = req.body;
+  if (!code) {
+    const user = await otp.registerByEmail({ email, id_otp_type: idOtpType });
+    if (user.length === 0) {
+      return responseHandler(res, 400, 'Invalid email');
+    }
+    if (user.length === 1) {
+      const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
+      const addOtp = { id_user: user[0].id, randomCode, id_otp_type: idOtpType };
+      const reset = await otp.createRequest(addOtp);
+      if (reset.affectedRows >= 1) {
+        await mail.sendMail({
+          from: APP_EMAIL,
+          to: email,
+          subject: 'Reset Your Password | Vehicles Rent',
+          text: String(randomCode),
+          html: `<b>Your Code for Reset Password is ${randomCode}</b>`,
+        });
+        return responseHandler(res, 200, 'Forgot Password request has been sent to your email!');
+      }
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
+    return responseHandler(res, 200, 'If you registered, reset password code will sended to your email!');
+  }
+  if (email) {
+    try {
+      const result = await otp.getRequest(code);
+      if (result.length === 1) {
+        if (result[0].is_expired) {
+          return responseHandler(res, 400, 'Expired code');
+        }
+        const user = await otp.getUser(result[0].id_user);
+        if (user[0].email === email) {
+          if (password) {
+            if (password === confirmPass) {
+              const hash = await argon2.hash(password);
+              const update = await userModel.updateUser({ password: hash }, user[0].id);
+              if (update.affectedRows === 1) {
+                await otp.updateRequest({ is_expired: 1 }, result[0].id);
+                return responseHandler(res, 200, 'Password has been reset!');
+              }
+              return responseHandler(res, 500, null, null, 'Unexpected Error');
+            }
+            return responseHandler(res, 400, null, null, 'Confirm password not same as password');
+          }
+          return responseHandler(res, 400, null, null, 'Password is mandatory!');
+        }
+        return responseHandler(res, 400, null, null, 'Invalid Email');
+      }
+      return responseHandler(res, 400, null, null, 'Invalid Code');
+    } catch (err) {
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
+  } else {
+    return responseHandler(res, 400, null, null, 'You have to provide Confirmation Code');
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  const idOtpType = 1;
+  try {
+    const users = req.user.id;
+    const dataUsers = await userModel.getUsers(users);
+    if (dataUsers[0].is_verified === 1) {
+      return responseHandler(res, 400, 'You have been verified!');
+    }
+    if (dataUsers.length === 0) {
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
+    const fillable = [{
+      field: 'code', required: false, type: 'varchar', max_length: 6,
+    }];
+
+    const { error, data } = inputValidator(req, fillable);
+    if (error.length > 0) {
+      return responseHandler(res, 400, null, null, error);
+    }
+
+    if (!data.code) {
+      const code = await otp.getRequestId({ id_user: users, id_otp_type: idOtpType });
+      if (code.length > 0) {
+        return responseHandler(res, 400, 'Code for your verification has been sent to your email, please check it!');
+      }
+      const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
+      const addOtp = { id_user: users, randomCode, id_otp_type: idOtpType };
+      const dataAddOtp = await otp.createRequest(addOtp);
+      if (dataAddOtp.affectedRows > 0) {
+        const result = await otp.getOtp(dataAddOtp.insertId);
+        if (result.length > 0) {
+          try {
+            await mail.sendMail({
+              from: APP_EMAIL,
+              to: users[0].email,
+              subject: 'User verification | Backend Beginner',
+              text: `${randomCode}`,
+              html: `Your Code for Verification Email is<br><b>${randomCode}</b>`,
+            });
+            return responseHandler(res, 200, 'Your code for your password reset has been sent to your email!');
+          } catch (err) {
+            return responseHandler(res, 500, null, null, 'Unexpected Error');
+          }
+        }
+        return responseHandler(res, 500, null, null, 'Unexpected Error');
+      }
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
+
+    const codeUser = await otp.getRequestId({ id_user: users, id_otp_type: idOtpType });
+    if (codeUser.length === 0) {
+      return responseHandler(res, 400, 'You do not have a code for your verification or it has been expired!');
+    }
+    if (data.code !== codeUser[0].code) {
+      return responseHandler(res, 400, 'Invalid code!');
+    }
+
+    const verifyUser = await userModel.updateUser(users, { is_verified: 1 });
+    if (verifyUser.affectedRows === 0) {
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
+    return responseHandler(res, 200, 'Your account has been verified');
   } catch (error) {
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   }
