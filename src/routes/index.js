@@ -1,6 +1,7 @@
 const route = require('express').Router();
 const responseHandler = require('../helpers/responseHandler');
 
+route.use('/promo', require('./promo'));
 route.use('/auth', require('./auth'));
 route.use('/user', require('./user'));
 route.use('/upload', require('./upload'));
