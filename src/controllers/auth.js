@@ -1,12 +1,13 @@
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
-const otp = require('../models/forgotPass');
+const otp = require('../models/otp');
 const mail = require('../helpers/mail');
 
 const { APP_SECRET, APP_EMAIL } = process.env;
 const responseHandler = require('../helpers/responseHandler');
-const { inputValidator, comparePassword } = require('../helpers/validator');
+const { inputValidator, comparePassword, passwordValidation } = require('../helpers/validator');
+const { generateOtp } = require('../helpers/generator');
 
 exports.login = async (req, res) => {
   const fillable = [
@@ -86,55 +87,78 @@ exports.register = async (req, res) => {
 };
 
 exports.forgotPass = async (req, res) => {
-  const {
-    email, code, password, confirmPass,
-  } = req.body;
-  if (!code) {
-    const user = await otp.registerByEmail({ email, id_otp_type: 2 });
-    if (user.length === 1) {
-      const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
-      const addOtp = { id_user: user[0].id, randomCode, id_otp_type: 2 };
-      const reset = await otp.createRequest(addOtp);
-      if (reset.affectedRows >= 1) {
+  const fillable = [
+    {
+      field: 'email', required: true, type: 'email', max_length: 100,
+    },
+    {
+      field: 'code', required: false, type: 'varchar', max_length: 6,
+    },
+    {
+      field: 'password', required: false, type: 'password',
+    },
+    {
+      field: 'confirm_password', required: false, type: 'password', by_pass_validation: true,
+    },
+  ];
+  const { data, error } = inputValidator(req, fillable);
+  if (error.length > 0) {
+    return responseHandler(res, 400, null, null, error);
+  }
+
+  const userByEmail = await userModel.getUserByEmail(data.email);
+  if (userByEmail.length === 0) {
+    return responseHandler(res, 400, `User with email ${data.email} is not found`);
+  }
+
+  if (!data.code) {
+    const user = await otp.getRequestId({ email: data.email, idOtpType: 2 });
+    if (user.length > 0) {
+      return responseHandler(res, 200, 'Your reset password code has been sent to your email!');
+    }
+    const randomCode = generateOtp(6);
+    const addOtp = { email: data.email, code: randomCode, id_otp_type: 2 };
+    const reset = await otp.createRequest(addOtp);
+    if (reset.affectedRows >= 1) {
+      try {
         await mail.sendMail({
           from: APP_EMAIL,
-          to: email,
+          to: data.email,
           subject: 'Reset Your Password | Vehicles Rent',
           text: String(randomCode),
           html: `<b>Your Code for Reset Password is ${randomCode}</b>`,
         });
-        return responseHandler(res, 200, 'Forgot Password request has been sent to your email!');
+      } catch (err) {
+        return responseHandler(res, 500, null, null, 'Unexpected Error');
+      }
+    }
+    return responseHandler(res, 200, 'Your reset password code has been sent to your email!');
+  }
+  if (data.email) {
+    try {
+      const codeByEmail = await otp.getRequestId({ email: data.email, idOtpType: 2 });
+      if (codeByEmail.length === 0) {
+        return responseHandler(res, 400, 'You do not have a code for your verification or it has been expired!');
+      }
+      if (data.code !== codeByEmail[0].code) {
+        return responseHandler(res, 400, 'Invalid code!');
+      }
+      if (!data.password || !data.confirm_password) {
+        return responseHandler(res, 400, null, null, 'Password and confirm password must be filled');
+      }
+      if (data.password && !passwordValidation(data.password)) {
+        return responseHandler(res, 400, null, null, 'Your password must include at lease 1 uppercase, 1 lowercase and 1 number');
+      }
+      if (data.confirm_password && !comparePassword(data.password, data.confirm_password)) {
+        return responseHandler(res, 400, null, null, 'Confirm password not same as password');
+      }
+      const hash = await argon2.hash(data.password);
+      const update = await userModel.updateUser(userByEmail[0].id, { password: hash });
+      if (update.affectedRows === 1) {
+        await otp.updateRequest({ is_expired: 1 }, codeByEmail[0].id);
+        return responseHandler(res, 200, 'Password has been reset!');
       }
       return responseHandler(res, 500, null, null, 'Unexpected Error');
-    }
-    return responseHandler(res, 200, 'If you registered, reset password code will sended to your email!');
-  }
-  if (email) {
-    try {
-      const result = await otp.getRequest(code);
-      if (result.length === 1) {
-        if (result[0].is_expired) {
-          return responseHandler(res, 400, 'Expired code');
-        }
-        const user = await otp.getUser(result[0].id_user);
-        if (user[0].email === email) {
-          if (password) {
-            if (password === confirmPass) {
-              const hash = await argon2.hash(password);
-              const update = await userModel.updateUser({ password: hash }, user[0].id);
-              if (update.affectedRows === 1) {
-                await otp.updateRequest({ is_expired: 1 }, result[0].id);
-                return responseHandler(res, 200, 'Password has been reset!');
-              }
-              return responseHandler(res, 500, null, null, 'Unexpected Error');
-            }
-            return responseHandler(res, 400, null, null, 'Confirm password not same as password');
-          }
-          return responseHandler(res, 400, null, null, 'Password is mandatory!');
-        }
-        return responseHandler(res, 400, null, null, 'Invalid Email');
-      }
-      return responseHandler(res, 400, null, null, 'Invalid Code');
     } catch (err) {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
@@ -153,6 +177,7 @@ exports.verify = async (req, res) => {
     if (userData[0].is_verified === 1) {
       return responseHandler(res, 400, 'You have been verified!');
     }
+    const userEmail = userData[0].email;
 
     const fillable = [{
       field: 'code', required: false, type: 'varchar', max_length: 6,
@@ -164,12 +189,12 @@ exports.verify = async (req, res) => {
     }
 
     if (!data.code) {
-      const codeByIdUser = await otp.getOtpByIdUser({ id_user: users, id_otp_type: 1 });
+      const codeByIdUser = await otp.getRequestId({ email: userEmail, idOtpType: 1 });
       if (codeByIdUser.length > 0) {
         return responseHandler(res, 400, 'Code for your verification has been sent to your email, please check it!');
       }
-      const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
-      const dataAddOtp = { id_user: users, code: randomCode, id_otp_type: 1 };
+      const randomCode = generateOtp(6);
+      const dataAddOtp = { email: userEmail, code: randomCode, id_otp_type: 1 };
       const addOtp = await otp.createRequest(dataAddOtp);
       if (addOtp.affectedRows > 0) {
         const result = await otp.getOtp(addOtp.insertId);
@@ -177,7 +202,7 @@ exports.verify = async (req, res) => {
           try {
             await mail.sendMail({
               from: APP_EMAIL,
-              to: userData[0].email,
+              to: userEmail,
               subject: 'User verification | Backend Beginner',
               text: `${randomCode}`,
               html: `Please use this code below to verify your account<br><b>${randomCode}</b>`,
@@ -192,11 +217,11 @@ exports.verify = async (req, res) => {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
 
-    const codeByIdUser = await otp.getRequestId({ id_user: users, id_otp_type: 1 });
-    if (codeByIdUser.length === 0) {
+    const codeByEmail = await otp.getRequestId({ email: userEmail, idOtpType: 1 });
+    if (codeByEmail.length === 0) {
       return responseHandler(res, 400, 'You do not have a code for your verification or it has been expired!');
     }
-    if (data.code !== codeByIdUser[0].code) {
+    if (data.code !== codeByEmail[0].code) {
       return responseHandler(res, 400, 'Invalid code!');
     }
 
@@ -204,8 +229,13 @@ exports.verify = async (req, res) => {
     if (verifyUserAccount.affectedRows === 0) {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
+    const setOtpExpired = await otp.updateRequest({ is_expired: 1 }, codeByEmail[0].id);
+    if (setOtpExpired.affectedRows === 0) {
+      return responseHandler(res, 500, null, null, 'Unexpected Error');
+    }
     return responseHandler(res, 200, 'Your account has been verified');
   } catch (error) {
+    console.log(error);
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   }
 };
