@@ -1,7 +1,7 @@
 const moment = require('moment-timezone');
 
 const isTime = (time) => {
-  let itsTime = false;
+  let itsTime = '';
   if (moment(time, 'HH:mm', true).isValid()) {
     itsTime = time;
   } else if (moment(time, 'HH:mm:ss', true).isValid()) {

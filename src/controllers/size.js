@@ -1,4 +1,5 @@
 const responseHandler = require('../helpers/responseHandler');
+const { inputValidator } = require('../helpers/validator');
 const sizeModel = require('../models/size');
 
 exports.getSize = async (req, res) => {
@@ -22,12 +23,22 @@ exports.getSizeId = async (req, res) => {
 };
 
 exports.addSize = async (req, res) => {
-  const { name, description } = req.body;
-  const data = { name, description };
-  if (!name || !description) {
-    return responseHandler(res, 400, null, null, 'Please fill in all the fields', null);
+  const fillable = [
+    {
+      field: 'name', required: true, type: 'varchar', max_length: 100,
+    },
+    {
+      field: 'label', required: true, type: 'varchar', max_length: 5,
+    },
+    {
+      field: 'description', required: true, type: 'text',
+    },
+  ];
+  const { data, error } = inputValidator(req, fillable);
+  if (error.length > 0) {
+    return responseHandler(res, 400, null, null, error);
   }
-  const checkSize = await sizeModel.getSizeName(name);
+  const checkSize = await sizeModel.getSizeName(data.name);
   if (checkSize.length > 0) {
     return responseHandler(res, 400, null, null, 'Size already on the list', null);
   }
@@ -35,7 +46,7 @@ exports.addSize = async (req, res) => {
   if (postNewSize.affectedRows < 1) {
     return responseHandler(res, 500, null, null, 'Server error', null);
   }
-  const getNewSize = await sizeModel.getSizeName(name);
+  const getNewSize = await sizeModel.getSizeId(postNewSize.insertId);
   if (getNewSize.length < 1) {
     return responseHandler(res, 500, null, null, 'Server error', null);
   }
@@ -44,25 +55,33 @@ exports.addSize = async (req, res) => {
 
 exports.updateSize = async (req, res) => {
   const { id } = req.params;
-  const data = {};
-  const dataName = ['name', 'description'];
-  dataName.forEach((x) => {
-    if (req.body[x]) {
-      data[x] = req.body[x];
-    }
-  });
   if (!id) {
     return responseHandler(res, 400, null, null, 'Undefined ID', null);
+  }
+  const fillable = [
+    {
+      field: 'name', required: false, type: 'varchar', max_length: 100,
+    },
+    {
+      field: 'label', required: false, type: 'varchar', max_length: 5,
+    },
+    {
+      field: 'description', required: false, type: 'text',
+    },
+  ];
+  const { data, error } = inputValidator(req, fillable);
+  if (error.length > 0) {
+    return responseHandler(res, 400, null, null, error);
   }
   if (id < 1 || Number.isNaN(Number(id))) {
     return responseHandler(res, 400, null, null, 'ID should be a number greater than 0', null);
   }
   if (Object.keys(data).length < 1) {
-    return responseHandler(res, 400, null, null, 'Null data', null);
+    return responseHandler(res, 400, null, null, 'New data should not be empty', null);
   }
   const checkID = await sizeModel.getSizeId(id);
   if (checkID.length < 1) {
-    return responseHandler(res, 404, null, null, 'Size not found', null);
+    return responseHandler(res, 400, null, null, 'Size not found', null);
   }
   if (data.name) {
     const checkSize = await sizeModel.getSizeName(data.name);
