@@ -30,7 +30,7 @@ exports.login = async (req, res) => {
         role: result[0].role,
       };
       const token = jwt.sign(authData, APP_SECRET);
-      return responseHandler(res, 200, 'Login success!', token);
+      return responseHandler(res, 200, 'Login success!', [token]);
     }
     return responseHandler(res, 401, 'Invalid credential!');
   }
