@@ -1,8 +1,15 @@
 /* eslint-disable no-console */
 const db = require('../helpers/db');
 
-exports.getPromo = () => new Promise((resolve, reject) => {
+exports.getPromos = () => new Promise((resolve, reject) => {
   db.query('SELECT * FROM promo WHERE is_deleted=0', (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.getPromo = (id) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo WHERE is_deleted=0 AND id=?', id, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
