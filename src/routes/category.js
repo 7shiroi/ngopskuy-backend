@@ -1,7 +1,7 @@
 const category = require('express').Router();
 const {
   addCategory, getCategory, editCategory, deleteCategory, getCategoryId,
-} = require('../controller/category');
+} = require('../controllers/category');
 
 category.get('/', getCategory);
 category.get('/:id', getCategoryId);

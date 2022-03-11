@@ -1,4 +1,3 @@
-// regex test
 const checkIntegerFormat = (data) => /^[1-9][0-9]*$/.test(data); // check apakah data isinya hanya digit yang awalnya bukan 0
 const checkIntegerFormatCanZero = (data) => /^[1-9][0-9]*$|^0$/.test(data); // check apakah data isinya hanya digit yang awalnya bukan 0
 const checkPriceFormat = (data) => /^[^-0+]\d+.\d{2}?$/.test(data) || /^0$/.test(data);

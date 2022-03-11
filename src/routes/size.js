@@ -2,7 +2,7 @@ const size = require('express').Router();
 
 const {
   getSize, addSize, deleteSize, updateSize, getSizeId,
-} = require('../controller/size');
+} = require('../controllers/size');
 
 size.get('/', getSize);
 size.get('/:id', getSizeId);

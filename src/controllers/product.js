@@ -2,8 +2,7 @@ const isNumber = require('../helpers/checkDataType');
 const isNull = require('../helpers/isNull');
 const responseHandler = require('../helpers/responseHandler');
 const isTime = require('../helpers/timeValidator');
-const productModel = require('../model/product');
-const upload = require('../helpers/upload').single('image');
+const productModel = require('../models/product');
 
 const { APP_URL } = process.env;
 
@@ -62,111 +61,107 @@ exports.getProductId = async (req, res) => {
   return responseHandler(res, 200, 'Product', checkProduct[0], null, null);
 };
 
-exports.addProduct = (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      return responseHandler(res, 400, null, null, err.message, null);
-    }
-    const {
-      name, idCategory, price, description, stock, deliveryHourStart, deliveryHourEnd,
-    } = req.body;
-    const dataName = ['name', 'idCategory', 'price', 'description', 'stock', 'deliveryHourStart', 'deliveryHourEnd'];
-    const dataNumber = ['idCategory', 'price', 'stock'];
-    let image = '';
-    if (req.file) {
-      image = `${APP_URL}/${req.file.destination}${req.file.filename}`;
-    }
-    const data = {
-      name, idCategory, price, description, stock, deliveryHourStart, deliveryHourEnd, image,
-    };
-    const checkNull = isNull(data, dataName);
-    if (checkNull > 0) {
-      return responseHandler(res, 400, null, null, 'Please fill in all the field', null);
-    }
-    const checkNumber = isNumber(data, dataNumber);
-    if (checkNumber > 0) {
-      return responseHandler(res, 400, null, null, 'Category ID, price and stock should be a number', null);
-    }
-    const changeTimeS = isTime(deliveryHourStart); // Time validation
-    const changeTimeE = isTime(deliveryHourEnd);
-    if (changeTimeS === 'Invalid date' || changeTimeE === 'Invalid date') {
-      return responseHandler(res, 400, null, null, 'Invalid time format', null);
-    }
-    data.deliveryHourStart = changeTimeS; // Change time into 24-hour format
-    data.deliveryHourEnd = changeTimeE; // Change time into 24-hour format
+exports.addProduct = async (req, res) => {
+  const {
+    name, idCategory, price, description, stock, deliveryHourStart, deliveryHourEnd,
+  } = req.body;
+  const dataName = ['name', 'idCategory', 'price', 'description', 'stock', 'deliveryHourStart', 'deliveryHourEnd'];
+  const dataNumber = ['idCategory', 'price', 'stock'];
+  let image = '';
+  if (req.file) {
+    image = req.file.path;
+  }
+  const data = {
+    name, idCategory, price, description, stock, deliveryHourStart, deliveryHourEnd, image,
+  };
+  const checkNull = isNull(data, dataName);
+  if (checkNull > 0) {
+    return responseHandler(res, 400, null, null, 'Please fill in all the field', null);
+  }
+  const checkNumber = isNumber(data, dataNumber);
+  if (checkNumber > 0) {
+    return responseHandler(res, 400, null, null, 'Category ID, price and stock should be a number', null);
+  }
+  const changeTimeS = isTime(deliveryHourStart); // Time validation
+  const changeTimeE = isTime(deliveryHourEnd);
+  if (changeTimeS === 'Invalid date' || changeTimeE === 'Invalid date') {
+    return responseHandler(res, 400, null, null, 'Invalid time format', null);
+  }
+  data.deliveryHourStart = changeTimeS; // Change time into 24-hour format
+  data.deliveryHourEnd = changeTimeE; // Change time into 24-hour format
 
-    const checkProduct = await productModel.getProductByName(data.name); // Check if product exist
-    if (checkProduct.length > 0) {
-      return responseHandler(res, 400, null, null, 'Product already on the list', null);
-    }
-    const postNewProduct = await productModel.addProduct(data); // Post new product
-    if (postNewProduct.affectedRows < 1) {
-      return responseHandler(res, 500, null, null, err.message, null);
-    }
-    // Get new input product
-    const getNewProduct = await productModel.getProductById(postNewProduct.insertId);
-    if (getNewProduct.length < 1) {
-      return responseHandler(res, 500, null, err.message, null);
-    }
-    return responseHandler(res, 200, 'Successfully add new product', getNewProduct, null, null);
-  });
+  const checkProduct = await productModel.getProductByName(data.name); // Check if product exist
+  if (checkProduct.length > 0) {
+    return responseHandler(res, 400, null, null, 'Product already on the list', null);
+  }
+  const postNewProduct = await productModel.addProduct(data); // Post new product
+  if (postNewProduct.affectedRows < 1) {
+    return responseHandler(res, 500, null, null, 'Server error', null);
+  }
+  // Get new input product
+  const getNewProduct = await productModel.getProductById(postNewProduct.insertId);
+  if (getNewProduct.length < 1) {
+    return responseHandler(res, 500, null, 'Server error', null);
+  }
+  return responseHandler(res, 200, 'Successfully add new product', getNewProduct, null, null);
 };
 
-exports.editProduct = (req, res) => {
+exports.editProduct = async (req, res) => {
   const { id } = req.params;
-  upload(req, res, async (err) => {
-    if (err) {
-      return responseHandler(res, 400, null, null, err.message, null);
+  if (!id) {
+    return responseHandler(res, 400, null, null, 'Undefined ID', null);
+  }
+  const dataName = ['name', 'idCategory', 'price', 'description', 'stock', 'deliveryHourStart', 'deliveryHourEnd'];
+  const dataNumber = ['idCategory', 'price', 'stock'];
+  const data = {};
+  dataName.forEach((x) => {
+    if (req.body[x]) {
+      data[x] = req.body[x];
     }
-    if (!id) {
-      return responseHandler(res, 400, null, null, 'Undefined ID', null);
-    }
-    const dataName = ['name', 'idCategory', 'price', 'description', 'stock', 'deliveryHourStart', 'deliveryHourEnd'];
-    const dataNumber = ['idCategory', 'price', 'stock'];
-    const data = {};
-    dataName.forEach((x) => {
-      if (req.body[x]) {
-        data[x] = req.body[x];
-      }
-    });
-    if (req.file) {
-      data.image = `${APP_URL}/${req.file.destination}${req.file.filename}`;
-    }
-    if (Object.keys(data).length < 1) {
-      return responseHandler(res, 400, null, null, 'Null data', null);
-    }
-    const checkNumber = isNumber(data, dataNumber);
-    if (checkNumber > 0) {
-      return responseHandler(res, 400, null, null, 'Category ID, price and stock should be a number', null);
-    }
-    const changeTimeS = isTime(data.deliveryHourStart); // Time validation
-    const changeTimeE = isTime(data.deliveryHourEnd);
-    if (changeTimeS === 'Invalid date' || changeTimeE === 'Invalid date') {
-      return responseHandler(res, 400, null, null, 'Invalid time format', null);
-    }
-    data.deliveryHourStart = changeTimeS; // Change time into 24-hour format
-    data.deliveryHourEnd = changeTimeE; // Change time into 24-hour format
-    const getData = await productModel.getProductById(id);
-    if (getData.length < 1) {
-      return responseHandler(res, 404, null, null, 'Data not found', null);
-    }
-    // Check if product exist
-    if (data.name) {
-      const getDataByName = await productModel.getProductByName(data.name);
-      if (getDataByName.length > 0 && getDataByName[0].id !== parseInt(id, 10)) {
-        return responseHandler(res, 400, null, null, 'Product already on the list', null);
-      }
-    }
-    const editData = await productModel.editProduct(data, id);
-    if (editData.affectedRows < 1) {
-      return responseHandler(res, 500, null, null, 'Server error', null);
-    }
-    const getEditedData = await productModel.getProductById(id);
-    if (getEditedData.length < 1) {
-      return responseHandler(res, 500, null, null, 'Server error', null);
-    }
-    return responseHandler(res, 200, 'Successfully edited data', getEditedData[0], null, null);
   });
+  if (req.file) {
+    data.image = req.file.path;
+  }
+  if (Object.keys(data).length < 1) {
+    return responseHandler(res, 400, null, null, 'Null data', null);
+  }
+  const checkNumber = isNumber(data, dataNumber);
+  if (checkNumber > 0) {
+    return responseHandler(res, 400, null, null, 'Category ID, price and stock should be a number', null);
+  }
+  let changeTimeS = '';
+  let changeTimeE = '';
+  if (data.deliveryHourStart) {
+    changeTimeS = isTime(data.deliveryHourStart); // Time validation
+  }
+  if (data.deliveryHourEnd) {
+    changeTimeE = isTime(data.deliveryHourEnd);
+  }
+  if (changeTimeS === 'Invalid date' || changeTimeE === 'Invalid date') {
+    return responseHandler(res, 400, null, null, 'Invalid time format', null);
+  }
+  data.deliveryHourStart = changeTimeS; // Change time into 24-hour format
+  data.deliveryHourEnd = changeTimeE; // Change time into 24-hour format
+  const getData = await productModel.getProductById(id);
+  if (getData.length < 1) {
+    return responseHandler(res, 404, null, null, 'Data not found', null);
+  }
+  // Check if product exist
+  if (data.name) {
+    const getDataByName = await productModel.getProductByName(data.name);
+    if (getDataByName.length > 0 && getDataByName[0].id !== parseInt(id, 10)) {
+      return responseHandler(res, 400, null, null, 'Product already on the list', null);
+    }
+  }
+  const editData = await productModel.editProduct(data, id);
+  if (editData.affectedRows < 1) {
+    return responseHandler(res, 500, null, null, 'Server error', null);
+  }
+  const getEditedData = await productModel.getProductById(id);
+  if (getEditedData.length < 1) {
+    return responseHandler(res, 500, null, null, 'Server error', null);
+  }
+  return responseHandler(res, 200, 'Successfully edited data', getEditedData[0], null, null);
 };
 
 exports.deleteProduct = async (req, res) => {
