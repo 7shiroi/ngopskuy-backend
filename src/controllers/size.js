@@ -1,5 +1,5 @@
 const responseHandler = require('../helpers/responseHandler');
-const sizeModel = require('../model/size');
+const sizeModel = require('../models/size');
 
 exports.getSize = async (req, res) => {
   const getData = await sizeModel.getSize();

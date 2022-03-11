@@ -44,19 +44,32 @@ const storage = new CloudinaryStorage({
 //   },
 // });
 
-const fileFilter = (req, file, cb) => {
-  const supportedMime = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-  ];
-  if (supportedMime.includes(file.mimetype)) {
-    cb(null, true);
+function imageFileFilter(req, file, cb) {
+  const supportedMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/tiff'];
+  if (!supportedMimeType.includes(file.mimetype)) {
+    cb(new Error('Filetype mismatch!'), false);
   } else {
-    cb(Error('Filetype mismatch!'), false);
+    cb(null, true);
   }
+}
+
+const uploadImage = (key, maxSize = null) => {
+  const upload = multer({
+    storage,
+    fileFilter: imageFileFilter,
+    limits: {
+      fileSize: maxSize || 2097152, // max 2MB
+    },
+  }).single(key);
+
+  return (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        return responseHandler(res, 400, err.message);
+      }
+      return next();
+    });
+  };
 };
 
-const upload = multer({ storage, fileFilter });
-
-module.exports = upload;
+module.exports = uploadImage;
