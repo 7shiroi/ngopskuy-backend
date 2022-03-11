@@ -330,7 +330,6 @@ ALTER TABLE `otp_type`
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_category` (`idCategory`);
-
 --
 -- Indexes for table `product_delivery_type`
 --
