@@ -50,3 +50,17 @@ exports.updateProductSize = (data) => new Promise((resolve, reject) => {
     resolve(res);
   });
 });
+
+exports.deletedProductSize = (id) => new Promise((resolve, reject) => {
+  db.query('DELETE FROM product_size WHERE id = ?', [id], (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.listProductSize = () => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM product_size', (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});

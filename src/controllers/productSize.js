@@ -10,7 +10,11 @@ const productSizeModel = require('../models/productSize');
 
 exports.getProductSize = async (req, res) => {
   try {
-    responseHandler(res, 200, 'List product size');
+    const result = await productSizeModel.listProductSize();
+    if (result.length === 0) {
+      responseHandler(res, 404, 'Data not found');
+    }
+    responseHandler(res, 200, 'List product size', result);
   } catch (err) {
     responseHandler(res, 500, 'Unexpected error', null, err);
   }
@@ -76,7 +80,6 @@ exports.patchProductSize = async (req, res) => {
       return responseHandler(res, '400', null, error);
     }
     data = camelToSnake(data); // convert variable camel to snake variable
-    console.log(data);
     const resultId = await productSizeModel.getDataById(id);
     if (resultId.length !== 1) {
       return responseHandler(res, 404, 'id not found');
@@ -96,5 +99,32 @@ exports.patchProductSize = async (req, res) => {
     return responseHandler(res, 200, 'Updated successfully', final);
   } catch (err) {
     return responseHandler(res, 500, 'Unexpected error', null, err);
+  }
+};
+
+exports.deleteProductSize = async (req, res) => {
+  try {
+    const { id } = req.query;
+    req.body.id = id;
+    const fillable = [
+      {
+        field: 'id', required: true, type: 'integer', can_zero: false,
+      },
+    ];
+    let { error, data } = validator.inputValidator(req, fillable);
+    if (error.length > 0) {
+      return responseHandler(res, '400', null, error);
+    }
+    const resultId = await productSizeModel.getDataById(id);
+    if (resultId.length !== 1) {
+      return responseHandler(res, 404, 'id not found');
+    }
+    const resultDeleted = await productSizeModel.deletedProductSize(id);
+    if (resultDeleted.affectedRows !== 1) {
+      return responseHandler(res, 500, 'Deleted failed');
+    }
+    responseHandler(res, 200, 'Deleted successfully', resultId);
+  } catch (err) {
+    responseHandler(res, 500, 'Unexpected error', null, err);
   }
 };
