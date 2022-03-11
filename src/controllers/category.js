@@ -1,5 +1,5 @@
 const responseHandler = require('../helpers/responseHandler');
-const categoryModel = require('../model/category');
+const categoryModel = require('../models/category');
 
 exports.getCategory = async (req, res) => {
   const getAllCategories = await categoryModel.getCategory();
