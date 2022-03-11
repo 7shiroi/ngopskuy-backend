@@ -1,7 +1,7 @@
-const db = require('../helpers/database');
+const db = require('../helpers/db');
 
-exports.createRequest = (addOtp) => new Promise((resolve, reject) => {
-  db.query('INSERT INTO otp SET ?', [addOtp], (err, res) => {
+exports.createRequest = (dataAddOtp) => new Promise((resolve, reject) => {
+  db.query('INSERT INTO otp SET ?', [dataAddOtp], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -15,7 +15,7 @@ exports.updateRequest = (data, id) => new Promise((resolve, reject) => {
 });
 
 exports.getRequest = (code) => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM forgot_request WHERE code=?', [code], (err, res) => {
+  db.query('SELECT * FROM otp WHERE code=?', [code], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -28,8 +28,8 @@ exports.getRequestId = (users, idOtpType) => new Promise((resolve, reject) => {
   });
 });
 
-exports.registerByEmail = (email, idOtpType) => new Promise((resolve, reject) => {
-  db.query('SELECT id, email, code FROM otp o join user u WHERE u.email = ? AND o.is_expired=0 AND o.id_otp_type=?', [email, idOtpType], (err, res) => {
+exports.registerByEmail = (email) => new Promise((resolve, reject) => {
+  db.query('SELECT email, code FROM otp o join user u WHERE u.email = ? ', [email], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -37,9 +37,16 @@ exports.registerByEmail = (email, idOtpType) => new Promise((resolve, reject) =>
 
 exports.getOtp = (id) => new Promise((resolve, reject) => {
   db.query(`SELECT email, code FROM otp o 
-  JOIN users u ON o.id_user = u.id 
+  JOIN user u ON o.id_user = u.id 
   WHERE o.id=?`, [id], (error, res) => {
     if (error) reject(error);
+    resolve(res);
+  });
+});
+
+exports.getUser = (id) => new Promise((resolve, reject) => {
+  db.query('SELECT id, email, password FROM user WHERE id = ?', [id], (err, res) => {
+    if (err) reject(err);
     resolve(res);
   });
 });

@@ -86,18 +86,14 @@ exports.register = async (req, res) => {
 };
 
 exports.forgotPass = async (req, res) => {
-  const idOtpType = 2;
   const {
     email, code, password, confirmPass,
   } = req.body;
   if (!code) {
-    const user = await otp.registerByEmail({ email, id_otp_type: idOtpType });
-    if (user.length === 0) {
-      return responseHandler(res, 400, 'Invalid email');
-    }
+    const user = await otp.registerByEmail({ email, id_otp_type: 2 });
     if (user.length === 1) {
       const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
-      const addOtp = { id_user: user[0].id, randomCode, id_otp_type: idOtpType };
+      const addOtp = { id_user: user[0].id, randomCode, id_otp_type: 2 };
       const reset = await otp.createRequest(addOtp);
       if (reset.affectedRows >= 1) {
         await mail.sendMail({
@@ -147,17 +143,17 @@ exports.forgotPass = async (req, res) => {
   }
 };
 
-exports.verifyEmail = async (req, res) => {
-  const idOtpType = 1;
+exports.verify = async (req, res) => {
   try {
     const users = req.user.id;
-    const dataUsers = await userModel.getUsers(users);
-    if (dataUsers[0].is_verified === 1) {
-      return responseHandler(res, 400, 'You have been verified!');
-    }
-    if (dataUsers.length === 0) {
+    const userData = await userModel.getUser(users);
+    if (userData.length === 0) {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
+    if (userData[0].is_verified === 1) {
+      return responseHandler(res, 400, 'You have been verified!');
+    }
+
     const fillable = [{
       field: 'code', required: false, type: 'varchar', max_length: 6,
     }];
@@ -168,23 +164,23 @@ exports.verifyEmail = async (req, res) => {
     }
 
     if (!data.code) {
-      const code = await otp.getRequestId({ id_user: users, id_otp_type: idOtpType });
-      if (code.length > 0) {
+      const codeByIdUser = await otp.getOtpByIdUser({ id_user: users, id_otp_type: 1 });
+      if (codeByIdUser.length > 0) {
         return responseHandler(res, 400, 'Code for your verification has been sent to your email, please check it!');
       }
       const randomCode = Math.floor(10 ** (6 - 1) + Math.random() * (10 ** 6 - 10 ** (6 - 1) - 1));
-      const addOtp = { id_user: users, randomCode, id_otp_type: idOtpType };
-      const dataAddOtp = await otp.createRequest(addOtp);
-      if (dataAddOtp.affectedRows > 0) {
-        const result = await otp.getOtp(dataAddOtp.insertId);
+      const dataAddOtp = { id_user: users, code: randomCode, id_otp_type: 1 };
+      const addOtp = await otp.createRequest(dataAddOtp);
+      if (addOtp.affectedRows > 0) {
+        const result = await otp.getOtp(addOtp.insertId);
         if (result.length > 0) {
           try {
             await mail.sendMail({
               from: APP_EMAIL,
-              to: users[0].email,
+              to: userData[0].email,
               subject: 'User verification | Backend Beginner',
               text: `${randomCode}`,
-              html: `Your Code for Verification Email is<br><b>${randomCode}</b>`,
+              html: `Please use this code below to verify your account<br><b>${randomCode}</b>`,
             });
             return responseHandler(res, 200, 'Your code for your password reset has been sent to your email!');
           } catch (err) {
@@ -196,16 +192,16 @@ exports.verifyEmail = async (req, res) => {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
 
-    const codeUser = await otp.getRequestId({ id_user: users, id_otp_type: idOtpType });
-    if (codeUser.length === 0) {
+    const codeByIdUser = await otp.getRequestId({ id_user: users, id_otp_type: 1 });
+    if (codeByIdUser.length === 0) {
       return responseHandler(res, 400, 'You do not have a code for your verification or it has been expired!');
     }
-    if (data.code !== codeUser[0].code) {
+    if (data.code !== codeByIdUser[0].code) {
       return responseHandler(res, 400, 'Invalid code!');
     }
 
-    const verifyUser = await userModel.updateUser(users, { is_verified: 1 });
-    if (verifyUser.affectedRows === 0) {
+    const verifyUserAccount = await userModel.updateUser(users, { is_verified: 1 });
+    if (verifyUserAccount.affectedRows === 0) {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
     return responseHandler(res, 200, 'Your account has been verified');
