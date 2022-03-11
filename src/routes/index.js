@@ -13,6 +13,8 @@ route.use('/category', require('./category'));
 route.use('/size', require('./size'));
 route.use('/delivery_type', require('./deliveryType'));
 route.use('/prod_delivery_type', require('./productDeliveryType'));
+route.use('/promo_delivery_type', require('./promoDeliveryType'));
+
 
 route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
 
