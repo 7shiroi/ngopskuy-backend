@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 // eslint-disable-next-line max-len
 const responseHandler = (res, status = 200, message = null, data = null, error = null, pageinfo = null) => {
   let success = true;
@@ -17,7 +18,11 @@ const responseHandler = (res, status = 200, message = null, data = null, error =
     jsonRes.pageinfo = pageinfo;
   }
   if (data) {
-    jsonRes.result = data;
+    if (data.length === 1) {
+      jsonRes.result = data[0];
+    } else {
+      jsonRes.result = data;
+    }
   }
   return res.status(status).json(jsonRes);
 };

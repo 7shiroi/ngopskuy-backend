@@ -1,7 +1,15 @@
 const route = require('express').Router();
 const responseHandler = require('../helpers/responseHandler');
 
+<<<<<<< HEAD
 route.use('/upload', require('./upload'));
+=======
+route.use('/promo', require('./promo'));
+route.use('/auth', require('./auth'));
+route.use('/user', require('./user'));
+route.use('/upload', require('./upload'));
+route.use('/productSize', require('./productSize'));
+>>>>>>> 216b9a6e9b242a19bcb74fa1c54b71629bb7988b
 
 route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
 route.use('/product', require('./product'));
