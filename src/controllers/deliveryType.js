@@ -148,7 +148,7 @@ exports.deleteDeliveryType = async (req, res) => {
     if (deleteDeliveryTypeData.affectedRows === 0) {
       return responseHandler(res, 500, null, null, 'Unexpected Error');
     }
-    return responseHandler(res, 200, `History with id ${id} has been deleted`, deliveryTypeData);
+    return responseHandler(res, 200, `Delivery Type with id ${id} has been deleted`, deliveryTypeData);
   } catch (error) {
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   }
