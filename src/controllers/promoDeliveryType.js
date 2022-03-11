@@ -7,6 +7,17 @@ const validator = require('../helpers/validator');
 const { camelToSnake } = require('../helpers/camelToSnake');
 const promoDeliveryTypeModel = require('../models/promoDeliveryType');
 
+exports.getPromoDeliveryType = async (req, res) => {
+  try {
+    const result = await promoDeliveryTypeModel.getListPromoDT();
+    if (result.length === 0) {
+      return responseHandler(res, 404, 'Data not found');
+    }
+    return responseHandler(res, 200, 'list of data', result);
+  } catch (err) {
+    return responseHandler(res, 500, 'Unexpected error', null, err);
+  }
+};
 exports.postPromoDeliveryType = async (req, res) => {
   try {
     const { idPromo, idDeliveryType } = req.body;
@@ -20,7 +31,7 @@ exports.postPromoDeliveryType = async (req, res) => {
     ];
     let { error, data } = validator.inputValidator(req, fillable);
     if (error.length > 0) {
-      return responseHandler(res, '400', null, error);
+      return responseHandler(res, 400, 'Bad request', null, error);
     }
     data = camelToSnake(data);
     const resultIdPromo = await promoDeliveryTypeModel.getIdPromo(data);
@@ -65,7 +76,7 @@ exports.patchPromoDeliveryType = async (req, res) => {
     ];
     let { error, data } = validator.inputValidator(req, fillable);
     if (error.length > 0) {
-      return responseHandler(res, '400', null, error);
+      return responseHandler(res, 400, 'Bad request', null, error);
     }
     data = camelToSnake(data);
     const resultId = await promoDeliveryTypeModel.getDataById(data);
@@ -110,11 +121,11 @@ exports.deletedPromoDeliveryType = async (req, res) => {
     ];
     let { error, data } = validator.inputValidator(req, fillable);
     if (error.length > 0) {
-      return responseHandler(res, '400', null, error);
+      return responseHandler(res, 400, 'Bad request', null, error);
     }
-    const resultId = await promoDeliveryTypeModel.getDataById(id);
-    if (resultId.length !== 1) {
-      return (res, 404, 'Id not found ');
+    const resultId = await promoDeliveryTypeModel.getDataById(data);
+    if (resultId.length === 0) {
+      return responseHandler(res, 404, 'Id not found ');
     }
     const resultsDeleted = await promoDeliveryTypeModel.deletedPromoDeliveryType(id);
     console.log(resultsDeleted);

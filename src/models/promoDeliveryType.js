@@ -52,7 +52,14 @@ exports.patchPromoDeliveryType = (data) => new Promise((resolve, reject) => {
 });
 
 exports.deletedPromoDeliveryType = (id) => new Promise((resolve, reject) => {
-  db.query('DELETE promo_delivery_type WHERE id = ?', [id], (err, res) => {
+  db.query('DELETE FROM promo_delivery_type WHERE id = ?', [id], (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.getListPromoDT = () => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo_delivery_type', (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
