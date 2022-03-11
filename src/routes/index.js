@@ -5,6 +5,7 @@ route.use('/auth', require('./auth'));
 route.use('/user', require('./user'));
 route.use('/upload', require('./upload'));
 route.use('/productSize', require('./productSize'));
+route.use('/promoDeliveryType', require('./promoDeliveryType'));
 
 route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
 
