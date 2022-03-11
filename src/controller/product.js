@@ -132,6 +132,9 @@ exports.editProduct = (req, res) => {
     if (req.file) {
       data.image = `${APP_URL}/${req.file.destination}${req.file.filename}`;
     }
+    if (Object.keys(data).length < 1) {
+      return responseHandler(res, 400, null, null, 'Null data', null);
+    }
     const checkNumber = isNumber(data, dataNumber);
     if (checkNumber > 0) {
       return responseHandler(res, 400, null, null, 'Category ID, price and stock should be a number', null);
