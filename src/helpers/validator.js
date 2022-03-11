@@ -1,9 +1,9 @@
-// regex test
+const isTime = require('./timeValidator');
+
 const checkIntegerFormat = (data) => /^[1-9][0-9]*$/.test(data); // check apakah data isinya hanya digit yang awalnya bukan 0
 const checkIntegerFormatCanZero = (data) => /^[1-9][0-9]*$|^0$/.test(data); // check apakah data isinya hanya digit yang awalnya bukan 0
 const checkPriceFormat = (data) => /^[^-0+]\d+.\d{2}?$/.test(data) || /^0$/.test(data);
 const checkBoolean = (data) => /^[01]$/.test(data);
-const timeValidation = (data) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(data);
 const phoneNumberValidation = (data) => /^[+0]\d+$/.test(data);
 const dateValidation = (data) => /^[^0]\d{3}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/.test(data);
 const emailValidation = (data) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(data);
@@ -46,7 +46,7 @@ const inputValidator = (req, fillable) => {
     if (!req.body[input.field] && input.required) {
       error.push(`${input.field} cannot be empty`);
     } else if (req.body[input.field]) {
-      const trimmedBody = req.body[input.field].trim();
+      let trimmedBody = req.body[input.field].trim();
       if (input.type === 'integer') {
         if (input.can_zero) {
           if (!checkIntegerFormatCanZero(trimmedBody)) {
@@ -65,8 +65,12 @@ const inputValidator = (req, fillable) => {
       if (input.type === 'boolean' && !checkBoolean(trimmedBody)) {
         error.push(`Invalid ${input.field} format`);
       }
-      if (input.type === 'time' && !timeValidation(trimmedBody)) {
-        error.push(`Invalid ${input.field} format`);
+      if (input.type === 'time') {
+        if (isTime(trimmedBody) === 'Invalid date') {
+          error.push(`Invalid ${input.field} format`);
+        } else {
+          trimmedBody = isTime(trimmedBody);
+        }
       }
       if (input.type === 'text' && trimmedBody.length === 0) {
         error.push(`Invalid ${input.field} format`);
@@ -90,7 +94,6 @@ module.exports = {
   checkIntegerFormat,
   checkPriceFormat,
   checkBoolean,
-  timeValidation,
   phoneNumberValidation,
   dateValidation,
   emailValidation,
