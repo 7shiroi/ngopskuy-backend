@@ -21,24 +21,22 @@ exports.getRequest = (code) => new Promise((resolve, reject) => {
   });
 });
 
-exports.getRequestId = (users, idOtpType) => new Promise((resolve, reject) => {
-  db.query('SELECT id_user, email, code FROM otp WHERE id_user=? AND id_otp_type=? AND is_expired=0 ', [users, idOtpType], (err, res) => {
+exports.getRequestId = (data) => new Promise((resolve, reject) => {
+  db.query('SELECT id, email, code, id_otp_type FROM otp WHERE email=? AND id_otp_type=? AND is_expired=0 ', [data.email, data.idOtpType], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.registerByEmail = (email) => new Promise((resolve, reject) => {
-  db.query('SELECT email, code FROM otp o join user u WHERE u.email = ? ', [email], (err, res) => {
+  db.query('SELECT u.email, code FROM otp o join user u WHERE u.email = ? ', [email], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.getOtp = (id) => new Promise((resolve, reject) => {
-  db.query(`SELECT email, code FROM otp o 
-  JOIN user u ON o.id_user = u.id 
-  WHERE o.id=?`, [id], (error, res) => {
+  db.query('SELECT email, code FROM otp WHERE id=?', [id], (error, res) => {
     if (error) reject(error);
     resolve(res);
   });
