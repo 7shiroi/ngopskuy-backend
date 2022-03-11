@@ -9,6 +9,18 @@ exports.getCategory = async (req, res) => {
   return responseHandler(res, 200, 'Category list', getAllCategories, null, null);
 };
 
+exports.getCategoryId = async (req, res) => {
+  const { id } = req.params;
+  if (id < 1 || Number.isNaN(Number(id))) {
+    return responseHandler(res, 400, null, null, 'ID should be a number greater than 0', null);
+  }
+  const getData = await categoryModel.getCategoryId(id);
+  if (getData.length < 1) {
+    return responseHandler(res, 404, null, null, 'Data not found', null);
+  }
+  return responseHandler(res, 200, 'Category detail', getData[0], null, null);
+};
+
 exports.addCategory = async (req, res) => {
   const { name } = req.body;
   if (!name) {
