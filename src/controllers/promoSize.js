@@ -98,7 +98,6 @@ exports.addPromoSize = async (req, res) => {
     }
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   } catch (error) {
-    console.log(error);
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   }
 };

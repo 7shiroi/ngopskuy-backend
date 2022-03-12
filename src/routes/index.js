@@ -15,6 +15,7 @@ route.use('/delivery_type', require('./deliveryType'));
 route.use('/prod_delivery_type', require('./productDeliveryType'));
 route.use('/transaction_status', require('./transactionStatus'));
 route.use('/transaction', require('./transaction'));
+route.use('/transaction_product', require('./transactionProduct'));
 route.use('/promo_delivery_type', require('./promoDeliveryType'));
 route.use('/profile', require('./profile'));
 
