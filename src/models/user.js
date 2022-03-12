@@ -41,15 +41,23 @@ exports.getUserAll = (id) => new Promise((resolve, reject) => {
   });
 });
 
-exports.getUserByEmail = (email) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM user WHERE is_deleted=0 AND email='${email}'`, (error, res) => {
+exports.getUserByEmail = (data) => new Promise((resolve, reject) => {
+  let extraQuery = '';
+  if (data.id) {
+    extraQuery += ` AND id!=${data.id}`;
+  }
+  db.query(`SELECT * FROM user WHERE is_deleted=0 AND email='${data.email}' ${extraQuery}`, (error, res) => {
     if (error) reject(error);
     resolve(res);
   });
 });
 
-exports.getUserByPhoneNumber = (phoneNumber) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM user WHERE is_deleted=0 AND phone_number='${phoneNumber}'`, (error, res) => {
+exports.getUserByPhoneNumber = (data) => new Promise((resolve, reject) => {
+  let extraQuery = '';
+  if (data.id) {
+    extraQuery += ` AND id!=${data.id}`;
+  }
+  db.query(`SELECT * FROM user WHERE is_deleted=0 AND phone_number='${data.phoneNumber}' ${extraQuery}`, (error, res) => {
     if (error) reject(error);
     resolve(res);
   });
@@ -75,6 +83,25 @@ exports.updateUser = (id, data) => new Promise((resolve, reject) => {
 
 exports.deleteUser = (id) => new Promise((resolve, reject) => {
   db.query('DELETE FROM user WHERE id = ?', [id], (error, res) => {
+    if (error) reject(error);
+    resolve(res);
+  });
+});
+
+exports.getProfile = (id) => new Promise((resolve, reject) => {
+  // todo: add total order, join from transaction
+  db.query(`SELECT 
+      id,
+      first_name,
+      last_name,
+      email,
+      display_name,
+      phone_number,
+      address,
+      birth_date,
+      gender,
+      image
+    FROM user WHERE id = ?`, [id], (error, res) => {
     if (error) reject(error);
     resolve(res);
   });

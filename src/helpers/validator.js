@@ -81,7 +81,21 @@ const inputValidator = (req, fillable) => {
       if (input.type === 'password' && !input.by_pass_validation && !passwordValidation(trimmedBody, input.options)) {
         error.push(`Invalid ${input.field} format`);
       }
-      if (input.type === 'email' && !varcharValidator(trimmedBody, input.max_length) && !emailValidation(trimmedBody)) {
+      if (input.type === 'email') {
+        if (!emailValidation(trimmedBody)) {
+          error.push(`Invalid ${input.field} format`);
+        } else if (!varcharValidator(trimmedBody, input.max_length)) {
+          error.push(`Invalid ${input.field} format`);
+        }
+      }
+      if (input.type === 'phone_number') {
+        if (!phoneNumberValidation(trimmedBody)) {
+          error.push(`Invalid ${input.field} format`);
+        } else if (!varcharValidator(trimmedBody, input.max_length)) {
+          error.push(`Invalid ${input.field} format`);
+        }
+      }
+      if (input.type === 'date' && !dateValidation(trimmedBody)) {
         error.push(`Invalid ${input.field} format`);
       }
       data[input.field] = trimmedBody;
