@@ -1,8 +1,14 @@
-/* eslint-disable no-console */
 const db = require('../helpers/db');
 
-exports.getPromos = () => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM promo WHERE is_deleted=0', (err, res) => {
+exports.getPromos = (data) => new Promise((resolve, reject) => {
+  db.query(`SELECT * FROM promo WHERE is_deleted=0 ORDER BY ${data.orderBy} ${data.sort} LIMIT ${data.limit} OFFSET ${data.offset} `, (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.getPromosCount = (data) => new Promise((resolve, reject) => {
+  db.query(`SELECT COUNT(*) AS total FROM promo WHERE is_deleted=0 ORDER BY ${data.orderBy} ${data.sort}`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -16,41 +22,42 @@ exports.getPromo = (id) => new Promise((resolve, reject) => {
 });
 
 exports.postPromo = (data) => new Promise((resolve, reject) => {
-  const {
-    name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image,
-  } = data;
-  db.query('INSERT INTO promo (`name`, `normal_price`, `description`, `promo_code`, `date_start`, `date_end`, `discount_value`, `image`) VALUES (?,?,?,?,?,?,?,?)', [name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image], (err, res) => {
+  db.query('INSERT INTO promo SET ?', [data], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.isOnlyOne = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM promo WHERE name='${data.name}' || promo_code='${data.promoCode}'`, (err, res) => {
+  db.query(`SELECT * FROM promo WHERE name='${data.name}' || promo_code='${data.promo_code}'`, (err, res) => {
     if (err)reject(err);
     resolve(res);
   });
 });
 
-exports.getProduk = (id, name) => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM promo WHERE id = ? && name = ?', [id, name], (err, res) => {
+exports.getProduct = (id, name) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo WHERE id = ? && name = ? && is_deleted = 0', [id, name], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.updatePromo = (data, id) => new Promise((resolve, reject) => {
-  const {
-    name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image,
-  } = data;
-  db.query('UPDATE promo SET name = ? , normal_price=?, description=?, promo_code=?, date_start=?, date_end=?, discount_value=?, image=? WHERE id=?', [name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image, id], (err, res) => {
+  db.query('UPDATE promo SET ? WHERE id = ?', [data, id], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
-exports.deletePromo = (id) => new Promise((resolve, reject) => {
+exports.deletedPromo = (id) => new Promise((resolve, reject) => {
   db.query('UPDATE promo SET is_deleted = 1 WHERE id = ?', [id], (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.getPromoIsDeleted = (id) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo WHERE is_deleted=1 AND id=?', id, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
