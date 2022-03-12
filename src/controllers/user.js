@@ -112,7 +112,7 @@ exports.addUser = async (req, res) => {
       return responseHandler(res, 400, null, null, error);
     }
 
-    const emailFound = await userModel.getUserByEmail(data.email);
+    const emailFound = await userModel.getUserByEmail(data);
     if (emailFound.length > 0) {
       if (req.file) {
         deleteFile(req.file.filename);
@@ -121,7 +121,7 @@ exports.addUser = async (req, res) => {
     }
 
     if (data.phone_number) {
-      const phoneNumberFound = await userModel.getUserByPhoneNumber(data.phone_number);
+      const phoneNumberFound = await userModel.getUserByPhoneNumber(data);
       if (phoneNumberFound.length > 0) {
         if (req.file) {
           deleteFile(req.file.filename);
@@ -238,7 +238,7 @@ exports.editUser = async (req, res) => {
       return responseHandler(res, 400, null, null, 'User not found');
     }
     if (data.email) {
-      const emailFound = await userModel.getUserByEmail(data.email);
+      const emailFound = await userModel.getUserByEmail(data);
       if (emailFound.length > 0) {
         if (req.file) {
           deleteFile(req.file.filename);
@@ -247,7 +247,7 @@ exports.editUser = async (req, res) => {
       }
     }
     if (data.phone_number) {
-      const phoneNumberFound = await userModel.getUserByPhoneNumber(data.phone_number);
+      const phoneNumberFound = await userModel.getUserByPhoneNumber(data);
       if (phoneNumberFound.length > 0) {
         if (req.file) {
           deleteFile(req.file.filename);

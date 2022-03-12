@@ -22,7 +22,7 @@ exports.getSizeName = (name) => new Promise((resolve, reject) => {
 });
 
 exports.addSize = (data) => new Promise((resolve, reject) => {
-  db.query(`INSERT INTO size (name, description) VALUES('${data.name}', '${data.description}')`, (err, res) => {
+  db.query('INSERT INTO size SET ?', data, (err, res) => {
     if (err) { reject(err); }
     resolve(res);
   });

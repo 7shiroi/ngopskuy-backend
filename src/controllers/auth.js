@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
   if (error.length > 0) {
     return responseHandler(res, 400, null, null, error);
   }
-  const result = await userModel.getUserByEmail(data.email);
+  const result = await userModel.getUserByEmail(data);
   if (result.length > 0) {
     if (await argon2.verify(result[0].password, data.password)) {
       const authData = {
@@ -57,7 +57,7 @@ exports.register = async (req, res) => {
       },
     ];
     const { error, data } = inputValidator(req, fillable);
-    const emailCheck = await userModel.getUserByEmail(data.email);
+    const emailCheck = await userModel.getUserByEmail(data);
     if (emailCheck.length > 0) {
       error.push('Email has been used');
     }
@@ -106,7 +106,7 @@ exports.forgotPass = async (req, res) => {
     return responseHandler(res, 400, null, null, error);
   }
 
-  const userByEmail = await userModel.getUserByEmail(data.email);
+  const userByEmail = await userModel.getUserByEmail(data);
   if (userByEmail.length === 0) {
     return responseHandler(res, 400, `User with email ${data.email} is not found`);
   }

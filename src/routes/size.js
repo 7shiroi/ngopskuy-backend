@@ -9,7 +9,6 @@ size.get('/:id', getSizeId);
 size.post('/', addSize);
 size.patch('/', updateSize);
 size.patch('/:id', updateSize);
-size.delete('/', deleteSize);
 size.delete('/:id', deleteSize);
 
 module.exports = size;

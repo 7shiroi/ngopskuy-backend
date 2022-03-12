@@ -11,7 +11,7 @@ const promo = require('../routes/promo');
 
 exports.getPromo = async (req, res) => {
   try {
-    const results = await promoModel.getPromo();
+    const results = await promoModel.getPromos();
     if (results.length > 0) {
       responseHandler(res, 200, 'List of promo', results);
     } else {
