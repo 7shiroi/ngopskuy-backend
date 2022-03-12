@@ -14,15 +14,15 @@ const responseHandler = (res, status = 200, message = null, data = null, error =
   if (error) {
     jsonRes.error = error;
   }
+  if (pageinfo) {
+    jsonRes.pageinfo = pageinfo;
+  }
   if (data) {
     if (data.length === 1) {
       jsonRes.result = data[0];
     } else {
       jsonRes.result = data;
     }
-  }
-  if (pageinfo) {
-    jsonRes.pageinfo = pageinfo;
   }
   return res.status(status).json(jsonRes);
 };

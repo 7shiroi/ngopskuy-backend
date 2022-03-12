@@ -1,10 +1,11 @@
 const product = require('express').Router();
 const uploadImage = require('../helpers/upload');
 const {
-  getProduct, addProduct, editProduct, getProductId, deleteProduct,
+  getProduct, addProduct, editProduct, getProductId, deleteProduct, getFavoriteProducts,
 } = require('../controllers/product');
 
 product.get('/', getProduct);
+product.get('/favorite', getFavoriteProducts);
 product.get('/:id', getProductId);
 product.post('/', uploadImage('image'), addProduct);
 product.patch('/', editProduct);

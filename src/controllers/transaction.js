@@ -120,25 +120,25 @@ exports.addTransaction = async (req, res) => {
         field: 'id_user', required: false, type: 'integer',
       },
       {
-        field: 'id_product', required: false, type: 'integer',
+        field: 'id_product', required: true, type: 'integer',
       },
       {
-        field: 'id_transaction_status', required: false, type: 'integer',
+        field: 'id_transaction_status', required: true, type: 'integer',
       },
       {
-        field: 'quantity', required: false, type: 'integer',
+        field: 'quantity', required: true, type: 'integer',
       },
       {
-        field: 'payment_method', required: false, type: 'integer',
+        field: 'payment_method', required: true, type: 'integer',
       },
       {
-        field: 'is_delivered', required: false, type: 'boolean',
+        field: 'is_delivered', required: true, type: 'boolean',
       },
       {
         field: 'table_number', required: false, type: 'integer',
       },
       {
-        field: 'total_price', required: false, type: 'varchar',
+        field: 'total_price', required: true, type: 'price',
       },
     ];
     const { error, data } = inputValidator(req, fillable);
