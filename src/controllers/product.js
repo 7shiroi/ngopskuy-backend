@@ -1,11 +1,33 @@
 const responseHandler = require('../helpers/responseHandler');
-const { inputValidator } = require('../helpers/validator');
+const { inputValidator, checkIntegerFormat } = require('../helpers/validator');
 const productModel = require('../models/product');
 const categoryModel = require('../models/category');
 const { deleteFile } = require('../helpers/fileHandler');
 const { cloudPathToFileName } = require('../helpers/converter');
 
 const { APP_URL } = process.env;
+
+const filterQueryValidation = (data) => {
+  const error = [];
+  if (data.idCategory !== undefined && !checkIntegerFormat(data.idCategory)) {
+    error.push('IdCategory query invalid');
+  }
+
+  if (data.minPrice !== undefined && !checkIntegerFormat(data.minPrice)) {
+    error.push('Minimal price query invalid!');
+  }
+  if (data.maxPrice !== undefined && !checkIntegerFormat(data.maxPrice)) {
+    error.push('Minimal price query invalid!');
+  }
+
+  if (data.page !== undefined && !checkIntegerFormat(data.page)) {
+    error.push('Page query invalid!');
+  }
+  if (data.limit !== undefined && !checkIntegerFormat(data.limit)) {
+    error.push('Limit query invalid!');
+  }
+  return error;
+};
 
 exports.getProduct = async (req, res) => {
   let {
@@ -239,4 +261,61 @@ exports.deleteProduct = async (req, res) => {
     return responseHandler(res, 500, null, null, 'Server error', null);
   }
   return responseHandler(res, 200, 'Successfully deleted data', null, null, null);
+};
+
+exports.getFavoriteProducts = async (req, res) => {
+  try {
+    let {
+      name, minPrice, maxPrice, page, limit,
+    } = req.query;
+    const { idCategory } = req.query;
+    const { error } = filterQueryValidation({
+      minPrice, maxPrice, idCategory, page, limit,
+    });
+    if (error) {
+      return responseHandler(res, 400, null, null, error);
+    }
+    name = name || '';
+    minPrice = parseInt(minPrice, 10);
+    maxPrice = parseInt(maxPrice, 10);
+    page = parseInt(page, 10) || 1;
+    limit = parseInt(limit, 10) || 12;
+    const offset = (page - 1) * limit;
+    const dataName = ['name', 'priceMin', 'priceMax', 'id_category'];
+    const data = {
+      name, minPrice, maxPrice, idCategory, page, limit, offset,
+    };
+    console.log(data);
+    if (data.idCategory) {
+      const checkCategory = categoryModel.getCategoryId(data.idCategory);
+      if (checkCategory.length === 0) {
+        return responseHandler(res, 400, null, null, `Category with id ${data.id_category} is not existed`);
+      }
+    }
+
+    let url = `${APP_URL}/product?`;
+    dataName.forEach((x) => {
+      if (data[x]) {
+        url = `${url}${x}=${data[x]}&`;
+      }
+    });
+
+    const getFavoriteProductsCount = await productModel.getFavoriteProductsCount(data);
+    const last = Math.ceil(getFavoriteProductsCount[0].rowsCount / limit);
+    const results = await productModel.getFavoriteProducts(data);
+    const pageInfo = {
+      prev: page > 1 ? `${url}page=${page - 1}&limit=${limit}` : null,
+      next: page < last ? `${url}page=${page + 1}&limit=${limit}` : null,
+      totalData: getFavoriteProductsCount[0].rowsCount,
+      currentPage: page,
+      lastPage: last,
+    };
+    if (results.length === 0) {
+      return responseHandler(res, 400, 'There is no favorite product right now');
+    }
+    return responseHandler(res, 200, 'Favorite Product List', results, null, pageInfo);
+  } catch (error) {
+    console.log(error);
+    return responseHandler(res, 500, null, null, 'Unexpected Error');
+  }
 };
