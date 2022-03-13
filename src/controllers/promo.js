@@ -10,6 +10,8 @@ const promoModel = require('../models/promo');
 const { camelToSnake } = require('../helpers/camelToSnake');
 const { pageInfo } = require('../helpers/pageInfo');
 const { dinamisUrl } = require('../helpers/dinamisUrl');
+const { deleteFile } = require('../helpers/fileHandler');
+const { cloudPathToFileName } = require('../helpers/converter');
 
 exports.getPromo = async (req, res) => {
   try {
@@ -57,12 +59,24 @@ exports.getPromo = async (req, res) => {
   }
 };
 
+exports.getPromoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!validator.idValidator(id)) {
+      return responseHandler(res, 400, null, null, 'Invalid id format');
+    }
+    const getData = await promoModel.getPromo(id);
+    if (getData.length < 1) {
+      return responseHandler(res, 404, null, null, 'Data not found', null);
+    }
+    return responseHandler(res, 200, 'Promo detail', getData[0], null, null);
+  } catch (err) {
+    return responseHandler(res, 500, null, null, 'Unexpected Error!');
+  }
+};
+
 exports.postPromo = async (req, res) => {
   try {
-    let {
-      name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image,
-    } = req.body;
-
     const fillable = [
       {
         field: 'name', required: true, type: 'varchar', max_length: 100,
@@ -80,24 +94,32 @@ exports.postPromo = async (req, res) => {
         field: 'discountValue', required: true, type: 'integer',
       },
       {
-        field: 'image', required: false, type: 'text',
+        field: 'dateStart', required: true, type: 'date',
+      },
+      {
+        field: 'dateEnd', required: true, type: 'date',
       },
     ];
-    dateStart = validator.dateValidation(req.body.dateStart);
-    dateEnd = validator.dateValidation(req.body.dateEnd);
     let { error, data } = validator.inputValidator(req, fillable);
-    if (!dateStart || !dateEnd) {
-      error.push('cek input date');
+    if (data.dateStart && data.dateEnd && validator.compareDate(data.dateStart, data.dateEnd) === 1) {
+      error.push('Cannot set start date before end date');
     }
-    data.dateStart = req.body.dateStart;
-    data.dateEnd = req.body.dateEnd;
     if (error.length > 0) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
       return responseHandler(res, 400, 'Bad request', null, error, null);
     }
     data = camelToSnake(data);
     const isOnlyOne = await promoModel.isOnlyOne(data);
     if (isOnlyOne.length !== 0) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
       return responseHandler(res, 400, 'Input failed. name and code Promo has been input');
+    }
+    if (req.file) {
+      data.image = req.file.path;
     }
     const result = await promoModel.postPromo(data);
     if (result.affectedRows !== 1) {
@@ -106,17 +128,29 @@ exports.postPromo = async (req, res) => {
     const final = await promoModel.getPromo(result.insertId);
     return responseHandler(res, 200, 'Insert Successfully', final);
   } catch (err) {
+    if (req.file) {
+      deleteFile(req.file.filename);
+    }
     return responseHandler(res, 500, 'Unexpected Error', null, err, null);
   }
 };
 
 exports.patchPromo = async (req, res) => {
   try {
-    let {
-      name, normalPrice, description, promoCode, dateStart, dateEnd, discountValue, image,
-    } = req.body;
-    const { id } = req.query;
-    const nameP = req.query.name;
+    if (!validator.idValidator(req.params.id)) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
+      return responseHandler(res, 400, null, null, 'Invalid id format');
+    }
+    const { id } = req.params;
+    const result = await promoModel.getPromo(id);
+    if (result.length === 0) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
+      return responseHandler(res, 400, null, null, `Promo with id ${id} is not found`);
+    }
     const fillable = [
       {
         field: 'name', required: false, type: 'varchar', max_length: 100,
@@ -134,44 +168,68 @@ exports.patchPromo = async (req, res) => {
         field: 'discountValue', required: false, type: 'integer',
       },
       {
-        field: 'image', required: false, type: 'text',
+        field: 'dateStart', required: false, type: 'date',
+      },
+      {
+        field: 'dateEnd', required: false, type: 'date',
       },
     ];
-    dateStart = validator.dateValidation(req.body.dateStart);
-    dateEnd = validator.dateValidation(req.body.dateEnd);
     let { error, data } = validator.inputValidator(req, fillable);
-    if (!dateStart || !dateEnd) {
-      return responseHandler(res, 400, 'cek input date', null, null, null);
+
+    if (data.dateStart && data.dateEnd && validator.compareDate(data.dateStart, data.dateEnd) === 1) {
+      error.push('Cannot set start date before end date');
     }
-    data.dateStart = req.body.dateStart;
-    data.dateEnd = req.body.dateEnd;
     if (error.length > 0) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
       return responseHandler(res, 400, 'Bad request', null, error, null);
     }
-    const produk = await promoModel.getProduct(id, nameP);
-    if (produk.length !== 1) {
-      return responseHandler(res, 404, 'Produk not found. cek your id and name', null, null, null);
+    if (req.file) {
+      data.image = req.file.path;
+    }
+    if (Object.keys(data).length < 1) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
+      return responseHandler(res, 400, null, null, 'Please insert new data', null);
     }
     data = camelToSnake(data);
-    console.log(data);
+
+    if (data.image) {
+      if (result[0].image) {
+        deleteFile(cloudPathToFileName(result[0].image));
+      }
+    }
     const update = await promoModel.updatePromo(data, id);
     if (update.affectedRows !== 1) {
+      if (req.file) {
+        deleteFile(req.file.filename);
+      }
       return responseHandler(res, 500, 'Updated failed');
     }
     const final = await promoModel.getPromo(id);
     return responseHandler(res, 200, 'Updated Successfully', final);
   } catch (err) {
+    console.log(err);
+    if (req.file) {
+      deleteFile(req.file.filename);
+    }
     return responseHandler(res, 400, 'Unexpected error', null, err, null);
   }
 };
 
 exports.deletePromo = async (req, res) => {
   try {
-    const { id, name } = req.query;
-    const product = await promoModel.getProduct(id, name);
-    if (product.length !== 1) {
-      return responseHandler(res, 404, 'Data not found. Cek your id');
+    if (!validator.idValidator(req.params.id)) {
+      return responseHandler(res, 400, null, null, 'Invalid id format');
     }
+    const { id } = req.params;
+    const result = promoModel.getPromo(id);
+    if (result.length === 0) {
+      return responseHandler(res, 400, null, null, `Promo with id ${id} is not found`);
+    }
+
     const isDeleted = await promoModel.deletedPromo(id);
     if (isDeleted.affectedRows !== 1) {
       return responseHandler(res, 500, 'Deleted failed');

@@ -98,7 +98,7 @@ exports.addProduct = async (req, res) => {
         field: 'price', required: true, type: 'price',
       },
       {
-        field: 'description', required: true, type: 'texy',
+        field: 'description', required: true, type: 'text',
       },
       {
         field: 'stock', required: true, type: 'integer',
@@ -285,7 +285,6 @@ exports.getFavoriteProducts = async (req, res) => {
     const data = {
       name, minPrice, maxPrice, idCategory, page, limit, offset,
     };
-    console.log(data);
     if (data.idCategory) {
       const checkCategory = categoryModel.getCategoryId(data.idCategory);
       if (checkCategory.length === 0) {
@@ -315,7 +314,6 @@ exports.getFavoriteProducts = async (req, res) => {
     }
     return responseHandler(res, 200, 'Favorite Product List', results, null, pageInfo);
   } catch (error) {
-    console.log(error);
     return responseHandler(res, 500, null, null, 'Unexpected Error');
   }
 };

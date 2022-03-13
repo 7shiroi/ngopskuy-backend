@@ -1,12 +1,14 @@
 const promo = require('express').Router();
 const {
-  getPromo, postPromo, patchPromo, deletePromo,
+  getPromo, postPromo, patchPromo, deletePromo, getPromoById,
 } = require('../controllers/promo');
+const uploadImage = require('../helpers/upload');
 const { verifyUser } = require('../helpers/auth');
 
 promo.get('/', getPromo);
-promo.post('/', verifyUser, postPromo);
-promo.patch('/', verifyUser, patchPromo);
-promo.patch('/deleted/', verifyUser, deletePromo);
+promo.get('/:id', getPromoById);
+promo.post('/', verifyUser, uploadImage('image'), postPromo);
+promo.patch('/:id', verifyUser, uploadImage('image'), patchPromo);
+promo.patch('/delete/:id', verifyUser, deletePromo);
 
 module.exports = promo;
