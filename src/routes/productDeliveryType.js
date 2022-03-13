@@ -2,13 +2,12 @@ const prodDelivery = require('express').Router();
 const {
   getProdDelType, addProdDelType, getProdDelTypeId, editProdDelType, deleteProdDelType,
 } = require('../controllers/productDeliveryType');
+const { verifyUser } = require('../helpers/auth');
 
 prodDelivery.get('/', getProdDelType);
 prodDelivery.get('/:id', getProdDelTypeId);
-prodDelivery.post('/', addProdDelType);
-prodDelivery.patch('/', editProdDelType);
-prodDelivery.patch('/:id', editProdDelType);
-prodDelivery.patch('/delete/', deleteProdDelType);
-prodDelivery.patch('/delete/:id', deleteProdDelType);
+prodDelivery.post('/', verifyUser, addProdDelType);
+prodDelivery.patch('/:id', verifyUser, editProdDelType);
+prodDelivery.patch('/delete/:id', verifyUser, deleteProdDelType);
 
 module.exports = prodDelivery;
