@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2022 at 05:39 AM
+-- Generation Time: Mar 13, 2022 at 03:20 PM
 -- Server version: 10.4.22-MariaDB
--- PHP Version: 8.0.15
+-- PHP Version: 7.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,10 +39,9 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Coffee', '2022-03-10 07:43:03', '2022-03-10 11:24:53'),
-(2, 'Non Coffee', '2022-03-10 07:45:51', NULL),
-(3, 'Food', '2022-03-10 08:14:51', NULL),
-(4, 'Add-on', '2022-03-10 08:15:13', NULL);
+(1, 'coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
+(2, 'non coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
+(3, 'desert', '2022-03-11 20:52:21', '2022-03-11 20:53:13');
 
 -- --------------------------------------------------------
 
@@ -119,13 +118,12 @@ INSERT INTO `otp_type` (`id`, `name`, `created_at`, `updated_at`) VALUES
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `idCategory` int(11) NOT NULL,
-  `price` int(11) NOT NULL,
+  `id_category` int(11) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(12,2) NOT NULL,
   `stock` int(11) NOT NULL,
-  `deliveryHourStart` time NOT NULL,
-  `deliveryHourEnd` time NOT NULL,
+  `delivery_hour_start` time NOT NULL,
+  `delivery_hour_end` time NOT NULL,
   `image` text NOT NULL,
   `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -141,7 +139,13 @@ INSERT INTO `product` (`id`, `name`, `id_category`, `description`, `price`, `sto
 (2, 'Choco Milkshake', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001832/ngopskuy/uploads/product/product-1647001830490.png', 0, '2022-03-11 20:18:22', '2022-03-11 20:30:34'),
 (3, 'Choco Milkshakes', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 1, '2022-03-11 20:19:27', '2022-03-11 20:48:11'),
 (4, 'Choco Milkshakess', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-11 20:20:11', NULL),
-(5, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001321/ngopskuy/uploads/product/product-1647001319431.png', 0, '2022-03-11 20:22:09', NULL);
+(5, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001321/ngopskuy/uploads/product/product-1647001319431.png', 0, '2022-03-11 20:22:09', NULL),
+(6, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:29:03', NULL),
+(7, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:34:43', NULL),
+(8, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:34:53', NULL),
+(9, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:50:29', NULL),
+(10, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647154240/ngopskuy/uploads/product/product-1647154238488.png', 0, '2022-03-13 14:50:41', NULL),
+(11, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647154252/ngopskuy/uploads/product/product-1647154250086.png', 0, '2022-03-13 14:51:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -197,7 +201,8 @@ CREATE TABLE `promo` (
 --
 
 INSERT INTO `promo` (`id`, `name`, `normal_price`, `description`, `promo_code`, `date_start`, `date_end`, `discount_value`, `image`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'Beef Break', '80000.00', 'Your super breakfast with smoked beef and tea', 'B3EDON2', '2022-03-11', '2022-03-13', 25, NULL, 0, '2022-03-12 00:17:45', NULL);
+(1, 'Beef Break', '80000.00', 'Your super breakfast with smoked beef and tea', 'B3EDON2', '2022-03-11', '2022-03-13', 25, NULL, 0, '2022-03-12 00:17:45', NULL),
+(2, 'Smokey Steak', '60000.00', 'Steak and some juicy lemonade for your super lunch', 'SL21SLJL', '2022-03-09', '2022-03-11', 15, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647158764/ngopskuy/uploads/promo/promo-1647158762863.png', 0, '2022-03-13 15:49:18', '2022-03-13 16:06:06');
 
 -- --------------------------------------------------------
 
@@ -362,7 +367,8 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `password`, `display_name`, `gender`, `birth_date`, `address`, `phone_number`, `is_verified`, `image`, `id_role`, `is_deleted`, `created_at`, `update_at`) VALUES
 (1, 'first', 'user', 'firstuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$SX62ePbe4NzzpumkyEwi3Q$f0ibNogfFrWsKFAec2L++ynolQyjcx+PY1fagvRRBW0', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646936708/ngopskuy/uploads/user/user-1646936705683.png', 2, 0, '2022-03-10 01:14:16', '2022-03-11 02:25:07'),
 (17, 'Random', 'User', 'randomuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$8k5pJS4CO8duWWZ8txEAYw$L7rmGrTcAHE+148CEmAxh3ZB2doRVZeSzevf5u+6fPU', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646931860/ngopskuy/uploads/user/user-1646931858181.png', 3, 0, '2022-03-11 01:04:19', NULL),
-(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-09', NULL, '0897449841', 1, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647057401/ngopskuy/uploads/user/user-1647057399644.png', 3, 0, '2022-03-11 10:29:46', '2022-03-12 12:49:13');
+(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-09', NULL, '0897449841', 1, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647057401/ngopskuy/uploads/user/user-1647057399644.png', 3, 0, '2022-03-11 10:29:46', '2022-03-12 12:49:13'),
+(19, 'kelvin', 'wong', 'lucky7kelvin@yahoo.com', '$argon2i$v=19$m=4096,t=3,p=1$vSMoB88ZPMC8iZ3yElOJ0g$Pgn78DYcAA+8keWvAHXG+TqvZIHp/8darVcqJOmjmug', NULL, NULL, NULL, NULL, NULL, 0, NULL, 3, 0, '2022-03-13 21:16:58', NULL);
 
 -- --------------------------------------------------------
 
@@ -420,7 +426,8 @@ ALTER TABLE `otp_type`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_category` (`idCategory`);
+  ADD KEY `id_category` (`id_category`);
+
 --
 -- Indexes for table `product_delivery_type`
 --
@@ -533,7 +540,7 @@ ALTER TABLE `otp_type`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `product_delivery_type`
@@ -551,7 +558,7 @@ ALTER TABLE `product_size`
 -- AUTO_INCREMENT for table `promo`
 --
 ALTER TABLE `promo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `promo_delivery_type`
@@ -593,7 +600,7 @@ ALTER TABLE `transaction_status`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `user_role`
@@ -615,7 +622,7 @@ ALTER TABLE `otp`
 -- Constraints for table `product`
 --
 ALTER TABLE `product`
-  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`idCategory`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product_delivery_type`
