@@ -90,7 +90,7 @@ exports.deleteUser = (id) => new Promise((resolve, reject) => {
 
 exports.getProfile = (id) => new Promise((resolve, reject) => {
   // todo: add total order, join from transaction
-  db.query(`SELECT 
+ db.query(`SELECT 
       u.id,
       u.first_name,
       u.last_name,
@@ -102,8 +102,8 @@ exports.getProfile = (id) => new Promise((resolve, reject) => {
       u.gender,
       u.image,
       (SELECT COUNT(*) FROM transaction t where t.id_user=u.id) total_order
-    FROM user u
-    JOIN transaction t ON t.id_user=u.id
+    FROM user u 
+    LEFT JOIN transaction t ON t.id_user=u.id
     WHERE u.id = ?`, [id], (error, res) => {
     if (error) reject(error);
     resolve(res);
