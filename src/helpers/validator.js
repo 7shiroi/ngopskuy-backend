@@ -79,7 +79,7 @@ const inputValidator = (req, fillable) => {
         error.push(`Invalid ${input.field} format`);
       }
       if (input.type === 'password' && !input.by_pass_validation && !passwordValidation(trimmedBody, input.options)) {
-        error.push(`Invalid ${input.field} format`);
+        error.push('Your password must include 1 uppercase, 1 lowercase, 1 number and at least 8 characters long');
       }
       if (input.type === 'email') {
         if (!emailValidation(trimmedBody)) {
