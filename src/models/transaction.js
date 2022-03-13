@@ -36,14 +36,36 @@ exports.totalTransactionUser = (data) => new Promise((resolve, reject) => {
 });
 
 exports.getTransactionProduct = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM transaction WHERE id_product=${data.id} AND is_deleted=0 LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
+  db.query(`SELECT 
+      t.id,
+      p.name product_name,
+      tp.quantity,
+      ts.name,
+      payment_method,
+      is_delivered,
+      table_number,
+      total_price
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE tp.id_product=${data.id}
+      AND t.is_deleted=0
+    LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.totalTransactionProduct = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT COUNT(*) AS totalData FROM transaction WHERE id_product=${data.id} AND is_deleted=0`, (err, res) => {
+  db.query(`SELECT 
+      COUNT(*)
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE tp.id_product=${data.id}
+      AND t.is_deleted=0`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
