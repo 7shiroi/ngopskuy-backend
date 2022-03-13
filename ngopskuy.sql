@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2022 at 03:40 AM
+-- Generation Time: Mar 13, 2022 at 05:39 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.3.33
 
@@ -264,10 +264,8 @@ INSERT INTO `size` (`id`, `name`, `label`, `description`, `created_at`, `updated
 CREATE TABLE `transaction` (
   `id` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `id_product` int(11) NOT NULL,
   `id_transaction_status` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `payment_method` enum('card','bank account','cash on delivery') NOT NULL,
+  `payment_method` enum('card','bank account','cash on delivery') DEFAULT NULL,
   `is_delivered` tinyint(4) NOT NULL,
   `table_number` int(11) DEFAULT NULL,
   `total_price` decimal(12,2) NOT NULL,
@@ -275,6 +273,38 @@ CREATE TABLE `transaction` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction`
+--
+
+INSERT INTO `transaction` (`id`, `id_user`, `id_transaction_status`, `payment_method`, `is_delivered`, `table_number`, `total_price`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 18, 1, 'card', 0, 2, '15000.00', 0, '2022-03-12 13:34:07', NULL),
+(2, 18, 1, 'card', 0, 2, '30000.00', 0, '2022-03-12 13:34:49', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaction_product`
+--
+
+CREATE TABLE `transaction_product` (
+  `id` int(11) NOT NULL,
+  `id_transaction` int(11) NOT NULL,
+  `id_product` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction_product`
+--
+
+INSERT INTO `transaction_product` (`id`, `id_transaction`, `id_product`, `quantity`, `created_at`, `updated_at`) VALUES
+(2, 1, 1, 2, '2022-03-12 14:53:31', '2022-03-12 15:12:29'),
+(4, 1, 2, 3, '2022-03-12 16:41:50', NULL),
+(5, 2, 2, 1, '2022-03-12 17:11:47', NULL);
 
 -- --------------------------------------------------------
 
@@ -288,6 +318,15 @@ CREATE TABLE `transaction_status` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction_status`
+--
+
+INSERT INTO `transaction_status` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'In cart', '2022-03-12 13:28:01', '2022-03-12 13:58:34'),
+(2, 'Checked out', '2022-03-12 13:28:08', '2022-03-12 13:59:07'),
+(3, 'Paid', '2022-03-12 13:28:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -321,7 +360,7 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `password`, `display_name`, `gender`, `birth_date`, `address`, `phone_number`, `is_verified`, `image`, `id_role`, `is_deleted`, `created_at`, `update_at`) VALUES
 (1, 'first', 'user', 'firstuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$SX62ePbe4NzzpumkyEwi3Q$f0ibNogfFrWsKFAec2L++ynolQyjcx+PY1fagvRRBW0', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646936708/ngopskuy/uploads/user/user-1646936705683.png', 2, 0, '2022-03-10 01:14:16', '2022-03-11 02:25:07'),
 (17, 'Random', 'User', 'randomuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$8k5pJS4CO8duWWZ8txEAYw$L7rmGrTcAHE+148CEmAxh3ZB2doRVZeSzevf5u+6fPU', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646931860/ngopskuy/uploads/user/user-1646931858181.png', 3, 0, '2022-03-11 01:04:19', NULL),
-(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$/I27JgFWBQQC1Ak4gGtKqA$Frx5wzn4VvF2sKYeak9uGLN3JdlTl+fZoYRh0CsC2oA', NULL, NULL, NULL, NULL, NULL, 1, NULL, 3, 0, '2022-03-11 10:29:46', '2022-03-11 13:53:44');
+(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-09', NULL, '0897449841', 1, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647057401/ngopskuy/uploads/user/user-1647057399644.png', 3, 0, '2022-03-11 10:29:46', '2022-03-12 12:49:13');
 
 -- --------------------------------------------------------
 
@@ -430,8 +469,15 @@ ALTER TABLE `size`
 --
 ALTER TABLE `transaction`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_user` (`id_user`,`id_product`,`id_transaction_status`),
-  ADD KEY `id_transaction_status` (`id_transaction_status`),
+  ADD KEY `id_user` (`id_user`,`id_transaction_status`),
+  ADD KEY `id_transaction_status` (`id_transaction_status`);
+
+--
+-- Indexes for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_transaction` (`id_transaction`,`id_product`),
   ADD KEY `id_product` (`id_product`);
 
 --
@@ -528,13 +574,19 @@ ALTER TABLE `size`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transaction_status`
 --
 ALTER TABLE `transaction_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -597,8 +649,14 @@ ALTER TABLE `promo_size`
 --
 ALTER TABLE `transaction`
   ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`id_transaction_status`) REFERENCES `transaction_status` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `transaction_ibfk_3` FOREIGN KEY (`id_product`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  ADD CONSTRAINT `transaction_product_ibfk_1` FOREIGN KEY (`id_product`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `transaction_product_ibfk_2` FOREIGN KEY (`id_transaction`) REFERENCES `transaction` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user`
