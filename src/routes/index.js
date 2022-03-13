@@ -2,8 +2,10 @@ const route = require('express').Router();
 const cors = require('cors');
 const responseHandler = require('../helpers/responseHandler');
 
+const { FRONT_END_URL } = process.env;
+
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: FRONT_END_URL,
 };
 route.use('/auth', cors(corsOptions), require('./auth'));
 route.use('/user', cors(corsOptions), require('./user'));
