@@ -37,7 +37,7 @@ exports.getPromo = async (req, res) => {
     }
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 5;
-    orderBy = orderBy || 'id';
+    orderBy = orderBy || 'name';
     sort = sort || 'ASC'; // ASC or DESC
     let offset = (page - 1) * limit;
     const data = {

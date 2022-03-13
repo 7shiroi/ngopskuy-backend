@@ -1,35 +1,93 @@
 const db = require('../helpers/db');
 
 exports.getTransaction = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM transaction WHERE is_deleted=0 LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
+  db.query(`SELECT 
+      t.id,
+      p.name product_name,
+      tp.quantity,
+      ts.name,
+      payment_method,
+      is_delivered,
+      table_number,
+      total_price,
+      p.image
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE t.is_deleted=0 LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.totalTransaction = () => new Promise((resolve, reject) => {
-  db.query('SELECT COUNT(*) AS totalData FROM transaction WHERE is_deleted=0', (err, res) => {
+  db.query(`SELECT 
+      COUNT(*) AS totalData 
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE t.is_deleted=0`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.getTransactionId = (id) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM transaction WHERE id=${id} AND is_deleted=0`, (err, res) => {
+  db.query(`SELECT 
+      t.id,
+      p.name product_name,
+      tp.quantity,
+      ts.name,
+      payment_method,
+      is_delivered,
+      table_number,
+      total_price,
+      p.image
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE t.id=${id}
+    AND t.is_deleted=0`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.getTransactionUser = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM transaction WHERE id_user=${data.id} AND is_deleted=0 LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
+  db.query(`SELECT 
+      t.id,
+      p.name product_name,
+      tp.quantity,
+      ts.name,
+      payment_method,
+      is_delivered,
+      table_number,
+      total_price,
+      p.image
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE id_user=${data.id}
+    AND t.is_deleted=0
+    LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
 exports.totalTransactionUser = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT COUNT(*) AS totalData FROM transaction WHERE id_user=${data.id} AND is_deleted=0`, (err, res) => {
+  db.query(`SELECT 
+      COUNT(*) AS totalData 
+    FROM transaction t
+    JOIN transaction_status ts ON t.id_transaction_status=ts.id
+    JOIN transaction_product tp ON tp.id_transaction=t.id
+    JOIN product p ON tp.id_product=p.id
+    WHERE id_user=${data.id}
+    AND t.is_deleted=0`, (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -44,7 +102,8 @@ exports.getTransactionProduct = (data) => new Promise((resolve, reject) => {
       payment_method,
       is_delivered,
       table_number,
-      total_price
+      total_price,
+      p.image
     FROM transaction t
     JOIN transaction_status ts ON t.id_transaction_status=ts.id
     JOIN transaction_product tp ON tp.id_transaction=t.id
