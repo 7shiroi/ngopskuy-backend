@@ -1,7 +1,6 @@
 {
   "name": "ngopskuy-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,12 +11,35 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argon2": "^0.28.5",
+    "bcrypt": "^5.0.1",
+    "busboy": "^1.4.0",
+    "cloudinary": "^1.28.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.34",
+    "multer": "^1.4.4",
+    "multer-storage-cloudinary": "^4.0.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15"
   },
   "devDependencies": {
-    "eslint": "^8.10.0"
-  }
+    "eslint": "^8.10.0",
+    "nodemon": "^2.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7shiroi/ngopskuy-backend.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/7shiroi/ngopskuy-backend/issues"
+  },
+  "homepage": "https://github.com/7shiroi/ngopskuy-backend#readme",
+  "description": ""
 }

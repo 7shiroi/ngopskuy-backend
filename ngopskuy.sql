@@ -5,7 +5,7 @@
 -- Host: 127.0.0.1
 -- Generation Time: Mar 13, 2022 at 05:39 AM
 -- Server version: 10.4.22-MariaDB
--- PHP Version: 7.3.33
+-- PHP Version: 8.0.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,9 +39,10 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
-(2, 'non coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
-(3, 'desert', '2022-03-11 20:52:21', '2022-03-11 20:53:13');
+(1, 'Coffee', '2022-03-10 07:43:03', '2022-03-10 11:24:53'),
+(2, 'Non Coffee', '2022-03-10 07:45:51', NULL),
+(3, 'Food', '2022-03-10 08:14:51', NULL),
+(4, 'Add-on', '2022-03-10 08:15:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -118,12 +119,13 @@ INSERT INTO `otp_type` (`id`, `name`, `created_at`, `updated_at`) VALUES
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `id_category` int(11) NOT NULL,
+  `idCategory` int(11) NOT NULL,
+  `price` int(11) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(12,2) NOT NULL,
   `stock` int(11) NOT NULL,
-  `delivery_hour_start` time NOT NULL,
-  `delivery_hour_end` time NOT NULL,
+  `deliveryHourStart` time NOT NULL,
+  `deliveryHourEnd` time NOT NULL,
   `image` text NOT NULL,
   `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -418,8 +420,7 @@ ALTER TABLE `otp_type`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_category` (`id_category`);
-
+  ADD KEY `id_category` (`idCategory`);
 --
 -- Indexes for table `product_delivery_type`
 --
@@ -614,7 +615,7 @@ ALTER TABLE `otp`
 -- Constraints for table `product`
 --
 ALTER TABLE `product`
-  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`idCategory`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product_delivery_type`
