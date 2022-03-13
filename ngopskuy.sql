@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2022 at 09:58 AM
+-- Generation Time: Mar 13, 2022 at 05:39 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.0.15
 
@@ -57,6 +57,14 @@ CREATE TABLE `delivery_type` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `delivery_type`
+--
+
+INSERT INTO `delivery_type` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(7, 'Delivery', '2022-03-10 14:08:36', NULL),
+(8, 'Take Away', '2022-03-10 14:21:44', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -65,13 +73,21 @@ CREATE TABLE `delivery_type` (
 
 CREATE TABLE `otp` (
   `id` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `id_otp_type` int(11) NOT NULL,
   `code` varchar(6) NOT NULL,
   `is_expired` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `otp`
+--
+
+INSERT INTO `otp` (`id`, `email`, `id_otp_type`, `code`, `is_expired`, `created_at`, `updated_at`) VALUES
+(4, 'bisefeh455@toudrum.com', 1, '386412', 1, '2022-03-11 13:21:40', '2022-03-11 13:23:42'),
+(10, 'bisefeh455@toudrum.com', 2, '172784', 1, '2022-03-11 13:50:15', '2022-03-11 13:53:44');
 
 -- --------------------------------------------------------
 
@@ -86,6 +102,14 @@ CREATE TABLE `otp_type` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `otp_type`
+--
+
+INSERT INTO `otp_type` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'verify user', '2022-03-11 13:03:56', '2022-03-11 06:03:45'),
+(2, 'forgot password', '2022-03-11 13:03:56', '2022-03-11 06:03:45');
+
 -- --------------------------------------------------------
 
 --
@@ -98,30 +122,26 @@ CREATE TABLE `product` (
   `idCategory` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   `description` text NOT NULL,
+  `price` decimal(12,2) NOT NULL,
   `stock` int(11) NOT NULL,
   `deliveryHourStart` time NOT NULL,
   `deliveryHourEnd` time NOT NULL,
   `image` text NOT NULL,
-  `isDeleted` tinyint(4) NOT NULL DEFAULT 0,
-  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
-  `updatedAt` datetime DEFAULT NULL ON UPDATE current_timestamp()
+  `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`id`, `name`, `idCategory`, `price`, `description`, `stock`, `deliveryHourStart`, `deliveryHourEnd`, `image`, `isDeleted`, `createdAt`, `updatedAt`) VALUES
-(1, 'Cold Brew', 1, 30000, 'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.', 5, '13:00:00', '19:00:00', 'http://localhost:5000/uploads/image 25-1646875823113-146237612.jpg', 0, '2022-03-10 08:30:23', '2022-03-10 13:31:02'),
-(2, 'Veggie Tomato Mix', 3, 34000, '', 5, '07:00:00', '11:00:00', 'http://localhost:5000/uploads/image2-1646890449180-384596200.jpg', 0, '2022-03-10 12:34:09', '2022-03-10 12:34:39'),
-(3, 'Summer Fried rice', 1, 30000, '', 10, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/image22-1646894602486-330873420.jpg', 0, '2022-03-10 12:35:47', '2022-03-10 15:26:56'),
-(4, 'Summer Fried rice', 3, 30000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/image22-1646894402636-418300410.jpg', 1, '2022-03-10 12:37:34', '2022-03-10 15:04:43'),
-(5, 'Corn Dog', 3, 28000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646892477669-857655176.jpg', 0, '2022-03-10 13:07:57', NULL),
-(6, 'Mocca Frappuccino', 1, 33000, '', 5, '07:00:00', '21:00:00', 'http://localhost:5000/uploads/mocha-frappuccino-1-720x405-1646901141080-190642062.jpg', 0, '2022-03-10 13:09:56', '2022-03-10 15:32:21'),
-(7, 'Thai Tea', 2, 29000, '', 5, '10:00:00', '21:00:00', 'http://localhost:5000/uploads/thai-tea-pearl-1646902192843-854382295.jpg', 0, '2022-03-10 14:01:21', '2022-03-10 15:57:01'),
-(8, 'Capuccino', 1, 30000, '', 5, '03:00:00', '09:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646895703154-191146590.jpg', 0, '2022-03-10 14:01:43', NULL),
-(9, 'Capuccino', 1, 30000, '', 5, '17:00:00', '17:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646897060885-864528680.jpg', 0, '2022-03-10 14:24:20', NULL),
-(10, 'Capuccino', 1, 30000, '', 5, '17:00:00', '21:00:00', 'http://localhost:5000/uploads/corndog-lezat-1646897086329-321456096.jpg', 0, '2022-03-10 14:24:46', NULL);
+INSERT INTO `product` (`id`, `name`, `id_category`, `description`, `price`, `stock`, `delivery_hour_start`, `delivery_hour_end`, `image`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 'Kapal Api', 1, 'This is Kopi, Kapal Api', '15000.00', 5, '10:00:00', '23:00:00', '', 0, '2022-03-11 20:00:31', NULL),
+(2, 'Choco Milkshake', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001832/ngopskuy/uploads/product/product-1647001830490.png', 0, '2022-03-11 20:18:22', '2022-03-11 20:30:34'),
+(3, 'Choco Milkshakes', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 1, '2022-03-11 20:19:27', '2022-03-11 20:48:11'),
+(4, 'Choco Milkshakess', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-11 20:20:11', NULL),
+(5, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001321/ngopskuy/uploads/product/product-1647001319431.png', 0, '2022-03-11 20:22:09', NULL);
 
 -- --------------------------------------------------------
 
@@ -166,10 +186,18 @@ CREATE TABLE `promo` (
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
   `discount_value` int(11) NOT NULL,
-  `image` text NOT NULL,
+  `image` text DEFAULT NULL,
+  `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `promo`
+--
+
+INSERT INTO `promo` (`id`, `name`, `normal_price`, `description`, `promo_code`, `date_start`, `date_end`, `discount_value`, `image`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 'Beef Break', '80000.00', 'Your super breakfast with smoked beef and tea', 'B3EDON2', '2022-03-11', '2022-03-13', 25, NULL, 0, '2022-03-12 00:17:45', NULL);
 
 -- --------------------------------------------------------
 
@@ -199,6 +227,13 @@ CREATE TABLE `promo_size` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `promo_size`
+--
+
+INSERT INTO `promo_size` (`id`, `id_promo`, `id_size`, `created_at`, `updated_at`) VALUES
+(2, 1, 2, '2022-03-12 00:20:46', '2022-03-12 00:34:47');
+
 -- --------------------------------------------------------
 
 --
@@ -208,10 +243,19 @@ CREATE TABLE `promo_size` (
 CREATE TABLE `size` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `label` varchar(5) NOT NULL,
   `description` varchar(100) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `size`
+--
+
+INSERT INTO `size` (`id`, `name`, `label`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Regular', 'R', '250gr', '2022-03-11 21:07:59', '2022-03-11 21:14:38'),
+(2, 'Large', 'L', '350gr', '2022-03-11 21:13:28', NULL);
 
 -- --------------------------------------------------------
 
@@ -222,10 +266,8 @@ CREATE TABLE `size` (
 CREATE TABLE `transaction` (
   `id` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `id_product` int(11) NOT NULL,
   `id_transaction_status` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `payment_method` enum('card','bank account','cash on delivery') NOT NULL,
+  `payment_method` enum('card','bank account','cash on delivery') DEFAULT NULL,
   `is_delivered` tinyint(4) NOT NULL,
   `table_number` int(11) DEFAULT NULL,
   `total_price` decimal(12,2) NOT NULL,
@@ -233,6 +275,38 @@ CREATE TABLE `transaction` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction`
+--
+
+INSERT INTO `transaction` (`id`, `id_user`, `id_transaction_status`, `payment_method`, `is_delivered`, `table_number`, `total_price`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 18, 1, 'card', 0, 2, '15000.00', 0, '2022-03-12 13:34:07', NULL),
+(2, 18, 1, 'card', 0, 2, '30000.00', 0, '2022-03-12 13:34:49', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaction_product`
+--
+
+CREATE TABLE `transaction_product` (
+  `id` int(11) NOT NULL,
+  `id_transaction` int(11) NOT NULL,
+  `id_product` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction_product`
+--
+
+INSERT INTO `transaction_product` (`id`, `id_transaction`, `id_product`, `quantity`, `created_at`, `updated_at`) VALUES
+(2, 1, 1, 2, '2022-03-12 14:53:31', '2022-03-12 15:12:29'),
+(4, 1, 2, 3, '2022-03-12 16:41:50', NULL),
+(5, 2, 2, 1, '2022-03-12 17:11:47', NULL);
 
 -- --------------------------------------------------------
 
@@ -247,6 +321,15 @@ CREATE TABLE `transaction_status` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `transaction_status`
+--
+
+INSERT INTO `transaction_status` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'In cart', '2022-03-12 13:28:01', '2022-03-12 13:58:34'),
+(2, 'Checked out', '2022-03-12 13:28:08', '2022-03-12 13:59:07'),
+(3, 'Paid', '2022-03-12 13:28:12', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -259,18 +342,27 @@ CREATE TABLE `user` (
   `last_name` varchar(50) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(120) NOT NULL,
-  `display_name` int(100) DEFAULT NULL,
-  `gender` int(11) DEFAULT NULL,
-  `birth_date` int(11) DEFAULT NULL,
-  `address` int(11) DEFAULT NULL,
-  `phone_number` int(11) DEFAULT NULL,
+  `display_name` varchar(100) DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `phone_number` varchar(14) DEFAULT NULL,
   `is_verified` tinyint(4) NOT NULL DEFAULT 0,
-  `image` int(11) DEFAULT NULL,
-  `id_role` int(11) NOT NULL,
+  `image` text DEFAULT NULL,
+  `id_role` int(11) NOT NULL DEFAULT 3,
   `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `update_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `password`, `display_name`, `gender`, `birth_date`, `address`, `phone_number`, `is_verified`, `image`, `id_role`, `is_deleted`, `created_at`, `update_at`) VALUES
+(1, 'first', 'user', 'firstuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$SX62ePbe4NzzpumkyEwi3Q$f0ibNogfFrWsKFAec2L++ynolQyjcx+PY1fagvRRBW0', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646936708/ngopskuy/uploads/user/user-1646936705683.png', 2, 0, '2022-03-10 01:14:16', '2022-03-11 02:25:07'),
+(17, 'Random', 'User', 'randomuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$8k5pJS4CO8duWWZ8txEAYw$L7rmGrTcAHE+148CEmAxh3ZB2doRVZeSzevf5u+6fPU', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646931860/ngopskuy/uploads/user/user-1646931858181.png', 3, 0, '2022-03-11 01:04:19', NULL),
+(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-09', NULL, '0897449841', 1, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647057401/ngopskuy/uploads/user/user-1647057399644.png', 3, 0, '2022-03-11 10:29:46', '2022-03-12 12:49:13');
 
 -- --------------------------------------------------------
 
@@ -315,7 +407,6 @@ ALTER TABLE `delivery_type`
 --
 ALTER TABLE `otp`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_user` (`id_user`,`id_otp_type`),
   ADD KEY `id_otp_type` (`id_otp_type`);
 
 --
@@ -379,8 +470,15 @@ ALTER TABLE `size`
 --
 ALTER TABLE `transaction`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_user` (`id_user`,`id_product`,`id_transaction_status`),
-  ADD KEY `id_transaction_status` (`id_transaction_status`),
+  ADD KEY `id_user` (`id_user`,`id_transaction_status`),
+  ADD KEY `id_transaction_status` (`id_transaction_status`);
+
+--
+-- Indexes for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_transaction` (`id_transaction`,`id_product`),
   ADD KEY `id_product` (`id_product`);
 
 --
@@ -411,31 +509,31 @@ ALTER TABLE `user_role`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `otp`
 --
 ALTER TABLE `otp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `otp_type`
 --
 ALTER TABLE `otp_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_delivery_type`
@@ -453,7 +551,7 @@ ALTER TABLE `product_size`
 -- AUTO_INCREMENT for table `promo`
 --
 ALTER TABLE `promo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `promo_delivery_type`
@@ -465,31 +563,37 @@ ALTER TABLE `promo_delivery_type`
 -- AUTO_INCREMENT for table `promo_size`
 --
 ALTER TABLE `promo_size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `size`
 --
 ALTER TABLE `size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transaction_status`
 --
 ALTER TABLE `transaction_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `user_role`
@@ -505,8 +609,7 @@ ALTER TABLE `user_role`
 -- Constraints for table `otp`
 --
 ALTER TABLE `otp`
-  ADD CONSTRAINT `otp_ibfk_1` FOREIGN KEY (`id_otp_type`) REFERENCES `otp_type` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `otp_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `otp_ibfk_1` FOREIGN KEY (`id_otp_type`) REFERENCES `otp_type` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product`
@@ -547,8 +650,14 @@ ALTER TABLE `promo_size`
 --
 ALTER TABLE `transaction`
   ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`id_transaction_status`) REFERENCES `transaction_status` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `transaction_ibfk_3` FOREIGN KEY (`id_product`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `transaction_product`
+--
+ALTER TABLE `transaction_product`
+  ADD CONSTRAINT `transaction_product_ibfk_1` FOREIGN KEY (`id_product`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `transaction_product_ibfk_2` FOREIGN KEY (`id_transaction`) REFERENCES `transaction` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user`
