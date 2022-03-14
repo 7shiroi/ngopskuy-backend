@@ -64,3 +64,10 @@ exports.getListPromoDT = () => new Promise((resolve, reject) => {
     resolve(res);
   });
 });
+
+exports.getListPromoDTByIdPromo = (id_promo) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo_delivery_type WHERE id_promo = ?', [id_promo], (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
