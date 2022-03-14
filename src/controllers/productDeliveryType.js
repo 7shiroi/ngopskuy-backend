@@ -1,10 +1,10 @@
 const { APP_URL } = process.env;
 const isNumber = require('../helpers/checkDataType');
-const isNull = require('../helpers/isNull');
 const responseHandler = require('../helpers/responseHandler');
 const prodModel = require('../models/productDeliveryType');
 const productModel = require('../models/product');
 const deliveryModel = require('../models/deliveryType');
+const { inputValidator } = require('../helpers/validator');
 
 exports.getProdDelType = async (req, res) => {
   try {
@@ -51,32 +51,34 @@ exports.getProdDelTypeId = async (req, res) => {
 
 exports.addProdDelType = async (req, res) => {
   try {
-    const { idProduct, idDeliveryType } = req.body;
-    const data = { idProduct, idDeliveryType };
-    const dataName = ['idProduct', 'idDeliveryType'];
-    const checkNull = isNull(data, dataName); // Check if data null
-    if (checkNull > 0) {
-      return responseHandler(res, 400, null, null, 'Please input all the fields', null, null);
-    }
-    const checkNumber = isNumber(data, dataName);
-    if (checkNumber > 0) {
-      return responseHandler(res, 400, null, null, 'Product ID and Delivery Type ID should be a number', null, null);
+    const fillable = [
+      {
+        field: 'id_product', required: true, type: 'integer',
+      },
+      {
+        field: 'id_delivery_type', required: true, type: 'integer',
+      },
+    ];
+    const { data, error } = inputValidator(req, fillable);
+
+    if (error.length > 0) {
+      return responseHandler(res, 400, null, null, error);
     }
     const checkExist = await prodModel.checkProdDelType(data); // Check if data exist
     if (checkExist.length > 0) {
       return responseHandler(res, 400, null, null, 'Data already on the list', null, null);
     }
-    const checkProdId = await productModel.getProductById(idProduct); // Check if product exist
+    const checkProdId = await productModel.getProductById(data.id_product);// Check if product exist
     if (checkProdId.length < 1) {
-      return responseHandler(res, 404, null, null, 'Product didn\'t exist', null);
+      return responseHandler(res, 400, null, null, 'Product didn\'t exist', null);
     }
-    const checkDeliveryMethod = await deliveryModel.getDeliveryType(idDeliveryType);
+    const checkDeliveryMethod = await deliveryModel.getDeliveryType(data.id_delivery_type);
     if (checkDeliveryMethod.length < 1) {
-      return responseHandler(res, 404, null, null, 'Delivery method didn\'t exist', null);
+      return responseHandler(res, 400, null, null, 'Delivery method didn\'t exist', null);
     }
     const addNewData = await prodModel.addProdDelType(data);
     const getNewData = await prodModel.getProdDelTypeId(addNewData.insertId);
-    return responseHandler(res, 200, 'Success', getNewData[0], null, null);
+    return responseHandler(res, 201, 'Success', getNewData[0], null, null);
   } catch (err) {
     return responseHandler(res, 500, null, null, 'Unexpected error', null, null);
   }
