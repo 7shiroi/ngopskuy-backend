@@ -6,6 +6,7 @@ const {
 const { verifyUser } = require('../helpers/auth');
 
 transaction.get('/', verifyUser, getTransaction);
+transaction.get('/user/', verifyUser, getTransactionByUser);
 transaction.get('/user/:id', verifyUser, getTransactionByUser);
 transaction.get('/product/:id', verifyUser, getTransactionByProduct);
 transaction.get('/:id', verifyUser, getTransactionById);

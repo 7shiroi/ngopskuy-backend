@@ -22,6 +22,7 @@ route.use('/promo', cors(corsOptions), require('./promo'));
 route.use('/promo_delivery_type', cors(corsOptions), require('./promoDeliveryType'));
 route.use('/promo_size', cors(corsOptions), require('./promoSize'));
 route.use('/profile', cors(corsOptions), require('./profile'));
+route.use('/customer-history', require('./custHistory'));
 
 route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
 
