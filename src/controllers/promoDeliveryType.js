@@ -59,14 +59,12 @@ exports.postPromoDeliveryType = async (req, res) => {
 
 exports.patchPromoDeliveryType = async (req, res) => {
   try {
-    const { idDeliveryType } = req.body;
-    const { id, idPromo } = req.query;
-    req.body.id = id;
-    req.body.idPromo = idPromo;
+    if (!validator.idValidator(req.params.id)) {
+      return responseHandler(res, 400, null, null, 'Invalid id format');
+    }
+    const { id } = req.params;
+
     const fillable = [
-      {
-        field: 'id', required: true, type: 'integer', can_zero: false,
-      },
       {
         field: 'idPromo', required: true, type: 'integer', can_zero: false,
       },
@@ -79,9 +77,9 @@ exports.patchPromoDeliveryType = async (req, res) => {
       return responseHandler(res, 400, 'Bad request', null, error);
     }
     data = camelToSnake(data);
-    const resultId = await promoDeliveryTypeModel.getDataById(data);
-    if (resultId.length !== 1) {
-      return responseHandler(res, 404, 'Id not found');
+    const resultId = await promoDeliveryTypeModel.getDataById(id);
+    if (resultId.length === 0) {
+      return responseHandler(res, 400, 'Id not found');
     }
     if (resultId[0].id_promo !== parseInt(data.id_promo)) {
       return responseHandler(res, 400, 'Please fill correct idPromo');
@@ -98,7 +96,7 @@ exports.patchPromoDeliveryType = async (req, res) => {
     if (isOnlyOne.length !== 0) {
       return responseHandler(res, 400, 'Data has been Input');
     }
-    const update = await promoDeliveryTypeModel.patchPromoDeliveryType(data);
+    const update = await promoDeliveryTypeModel.patchPromoDeliveryType(id, data);
     if (update.affectedRows !== 1) {
       return responseHandler(res, 500, 'Updated Failed');
     }
