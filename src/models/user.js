@@ -102,6 +102,7 @@ exports.getProfile = (id) => new Promise((resolve, reject) => {
       u.gender,
       u.image,
       u.is_verified,
+      u.id_role,
       ur.name role,
       (SELECT COUNT(*) FROM transaction t where t.id_user=u.id) total_order
     FROM user u 
