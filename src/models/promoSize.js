@@ -19,7 +19,18 @@ exports.getPromoSizesCount = (data) => new Promise((resolve, reject) => {
       JOIN size s on s.id=ps.id_size
     WHERE p.is_deleted = 0
       AND (p.name LIKE '%${data.search}%'
-        OR s.name LIKE '%${data.search}%'`, (error, res) => {
+        OR s.name LIKE '%${data.search}%')`, (error, res) => {
+    if (error) reject(error);
+    resolve(res);
+  });
+});
+
+exports.getPromoSizesByProduct = (idPromo) => new Promise((resolve, reject) => {
+  db.query(`SELECT ps.id, p.id id_product, p.name promo_name, s.name size_name, s.label, s.description FROM promo_size ps
+      JOIN promo p on p.id=ps.id_promo
+      JOIN size s on s.id=ps.id_size
+    WHERE p.is_deleted = 0
+      AND p.id=${idPromo}`, (error, res) => {
     if (error) reject(error);
     resolve(res);
   });

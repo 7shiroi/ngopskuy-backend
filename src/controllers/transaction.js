@@ -109,7 +109,6 @@ exports.getTransactionByProduct = async (req, res) => {
     };
     return responseHandler(res, 200, 'Transaction detail', getData, null, pageInfo);
   } catch (err) {
-    console.log(err);
     return responseHandler(res, 500, null, null, 'Unexpected Error!');
   }
 };

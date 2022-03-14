@@ -18,6 +18,21 @@ exports.getPromoDeliveryType = async (req, res) => {
     return responseHandler(res, 500, 'Unexpected error', null, err);
   }
 };
+
+exports.getPromoDeliveryTypeByIdPromo = async (req, res) => {
+  try {
+    const { id_promo } = req.params;
+    console.log(id_promo)
+    const result = await promoDeliveryTypeModel.getListPromoDTByIdPromo(id_promo);
+    if (result.length === 0) {
+      return responseHandler(res, 404, 'Data not found');
+    }
+    return responseHandler(res, 200, 'list of data', result);
+  } catch (err) {
+    return responseHandler(res, 500, 'Unexpected error', null, err);
+  }
+};
+
 exports.postPromoDeliveryType = async (req, res) => {
   try {
     const { idPromo, idDeliveryType } = req.body;
