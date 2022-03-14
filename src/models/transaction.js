@@ -3,14 +3,17 @@ const db = require('../helpers/db');
 exports.getTransaction = (data) => new Promise((resolve, reject) => {
   db.query(`SELECT 
       t.id,
+      p.id id_product,
       p.name product_name,
+      p.price,
       tp.quantity,
       ts.name,
       payment_method,
       is_delivered,
       table_number,
       total_price,
-      p.image
+      p.image,
+      (p.price*tp.quantity) sub_total
     FROM transaction t
     JOIN transaction_status ts ON t.id_transaction_status=ts.id
     JOIN transaction_product tp ON tp.id_transaction=t.id
@@ -37,14 +40,17 @@ exports.totalTransaction = () => new Promise((resolve, reject) => {
 exports.getTransactionId = (id) => new Promise((resolve, reject) => {
   db.query(`SELECT 
       t.id,
+      p.id id_product,
       p.name product_name,
+      p.price,
       tp.quantity,
       ts.name,
       payment_method,
       is_delivered,
       table_number,
       total_price,
-      p.image
+      p.image,
+      (p.price*tp.quantity) sub_total
     FROM transaction t
     JOIN transaction_status ts ON t.id_transaction_status=ts.id
     JOIN transaction_product tp ON tp.id_transaction=t.id
@@ -59,14 +65,17 @@ exports.getTransactionId = (id) => new Promise((resolve, reject) => {
 exports.getTransactionUser = (data) => new Promise((resolve, reject) => {
   db.query(`SELECT 
       t.id,
+      p.id id_product,
       p.name product_name,
+      p.price,
       tp.quantity,
       ts.name,
       payment_method,
       is_delivered,
       table_number,
       total_price,
-      p.image
+      p.image,
+      (p.price*tp.quantity) sub_total
     FROM transaction t
     JOIN transaction_status ts ON t.id_transaction_status=ts.id
     JOIN transaction_product tp ON tp.id_transaction=t.id
@@ -96,14 +105,17 @@ exports.totalTransactionUser = (data) => new Promise((resolve, reject) => {
 exports.getTransactionProduct = (data) => new Promise((resolve, reject) => {
   db.query(`SELECT 
       t.id,
+      p.id id_product,
       p.name product_name,
+      p.price,
       tp.quantity,
       ts.name,
       payment_method,
       is_delivered,
       table_number,
       total_price,
-      p.image
+      p.image,
+      (p.price*tp.quantity) sub_total
     FROM transaction t
     JOIN transaction_status ts ON t.id_transaction_status=ts.id
     JOIN transaction_product tp ON tp.id_transaction=t.id
