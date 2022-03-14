@@ -40,7 +40,7 @@ exports.getProduct = async (req, res) => {
   page = parseInt(page, 10) || 1;
   limit = parseInt(limit, 10) || 12;
   const offset = (page - 1) * limit;
-  const dataName = ['name', 'priceMin', 'priceMax', 'id_category'];
+  const dataName = ['name', 'minPrice', 'maxPrice', 'id_category'];
   const data = {
     name, minPrice, maxPrice, idCategory, page, limit, offset,
   };
