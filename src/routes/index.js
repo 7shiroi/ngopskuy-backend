@@ -11,7 +11,7 @@ route.use('/auth', cors(corsOptions), require('./auth'));
 route.use('/user', cors(corsOptions), require('./user'));
 route.use('/product', cors(corsOptions), require('./product'));
 route.use('/product_size', cors(corsOptions), require('./productSize'));
-route.use('/prod_delivery_type', cors(corsOptions), require('./productDeliveryType'));
+route.use('/product_delivery_type', cors(corsOptions), require('./productDeliveryType'));
 route.use('/category', cors(corsOptions), require('./category'));
 route.use('/size', cors(corsOptions), require('./size'));
 route.use('/delivery_type', cors(corsOptions), require('./deliveryType'));
