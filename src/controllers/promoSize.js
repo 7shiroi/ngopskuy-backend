@@ -51,6 +51,27 @@ exports.getPromoSize = async (req, res) => {
   }
 };
 
+exports.getPromoSizesByPromo = async (req, res) => {
+  try {
+    if (!idValidator(req.params.id)) {
+      return responseHandler(res, 400, null, null, 'Invalid Id Format!');
+    }
+    const { id } = req.params;
+    const getPromo = promoModel.getPromo(id);
+    if (getPromo.length === 0) {
+      return responseHandler(res, 400, `Promo with id ${id} is not found`);
+    }
+    const results = await promoSizeModel.getPromoSizesByProduct(id);
+    if (results.length === 0) {
+      return responseHandler(res, 200, 'There is no size for this product yet');
+    }
+    return responseHandler(res, 200, 'Promo sizes list', results[0]);
+  } catch (error) {
+    console.log(error);
+    return responseHandler(res, 500, 'Unexpected error!');
+  }
+};
+
 exports.addPromoSize = async (req, res) => {
   // if (req.user.role > 2) {
   //   return responseHandler(res, 403, null, null, 'You are not authorized to do this action');
