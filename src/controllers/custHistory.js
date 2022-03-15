@@ -158,3 +158,26 @@ exports.deleteTransaction = async (req, res) => {
     return responseHandler(res, 500, null, null, 'Unexpected Error!');
   }
 };
+
+exports.deleteCart = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = {};
+    data.id = id;
+    data.id_user = req.user.id;
+    if (!idValidator(id)) {
+      return responseHandler(res, 400, null, null, 'Invalid id format');
+    }
+    const checkTransaction = await cusHistoryModel.getCustCartId(data);
+    if (checkTransaction.length < 1) {
+      return responseHandler(res, 404, null, null, 'Transaction data not found', null);
+    }
+    const deleteData = await cusHistoryModel.deleteHistory(id);
+    if (deleteData.affectedRows < 1) {
+      return responseHandler(res, 500, null, null, 'Unexpected Error!');
+    }
+    return responseHandler(res, 200, 'Successfully deleted data', null, null, null);
+  } catch (err) {
+    return responseHandler(res, 500, null, null, 'Unexpected Error!');
+  }
+};
