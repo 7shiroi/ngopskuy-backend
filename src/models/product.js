@@ -1,21 +1,58 @@
 const db = require('../helpers/db');
 
 exports.getProduct = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM product WHERE name LIKE '%${data.name}%' AND is_deleted=0 AND price>=${data.minPrice} AND price<=${data.maxPrice} LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
+  let extraQueryWhere = '';
+  if (data.name) {
+    extraQueryWhere += ` AND name LIKE '%${data.name}%'`;
+  }
+  if (data.minPrice) {
+    extraQueryWhere += ` AND price>= ${data.minPrice}`;
+  }
+  if (data.maxPrice) {
+    extraQueryWhere += ` AND price<= ${data.maxPrice}`;
+  }
+  const q = db.query(`SELECT * FROM product WHERE is_deleted=0 ${extraQueryWhere} LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
     if (err) { reject(err); }
     resolve(res);
   });
+  console.log(q.sql);
 });
 
 exports.getProductByCategory = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT * FROM product WHERE name LIKE '%${data.name}%' AND is_deleted=0 AND price>=${data.minPrice} AND price<=${data.maxPrice} AND id_category=${data.idCategory} LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
+  let extraQueryWhere = '';
+  if (data.name) {
+    extraQueryWhere += ` AND name LIKE '%${data.name}%'`;
+  }
+  if (data.minPrice) {
+    extraQueryWhere += ` AND price>= ${data.minPrice}`;
+  }
+  if (data.maxPrice) {
+    extraQueryWhere += ` AND price>= ${data.maxPrice}`;
+  }
+  if (data.idCategory) {
+    extraQueryWhere += ` AND id_category=${data.idCategory}`;
+  }
+  db.query(`SELECT * FROM product WHERE is_deleted=0 ${extraQueryWhere} LIMIT ${data.limit} OFFSET ${data.offset}`, (err, res) => {
     if (err) { reject(err); }
     resolve(res);
   });
 });
 
 exports.getTotalData = (data) => new Promise((resolve, reject) => {
-  db.query(`SELECT COUNT(*) AS totalData FROM product WHERE name LIKE '%${data.name}%' AND is_deleted=0`, (err, res) => {
+  let extraQueryWhere = '';
+  if (data.name) {
+    extraQueryWhere += ` AND name LIKE '%${data.name}%'`;
+  }
+  if (data.minPrice) {
+    extraQueryWhere += ` AND price>= ${data.minPrice}`;
+  }
+  if (data.maxPrice) {
+    extraQueryWhere += ` AND price>= ${data.maxPrice}`;
+  }
+  if (data.idCategory) {
+    extraQueryWhere += ` AND id_category=${data.idCategory}`;
+  }
+  db.query(`SELECT COUNT(*) AS totalData FROM product WHERE is_deleted=0 ${extraQueryWhere}`, (err, res) => {
     if (err) { reject(err); }
     resolve(res);
   });
@@ -106,10 +143,10 @@ exports.getFavoriteProductsCount = (data) => new Promise((resolve, reject) => {
     extraQueryWhere += ` AND p.name LIKE '%${data.name}%'`;
   }
   if (data.minPrice) {
-    extraQueryWhere += ` AND price>= '%${data.minPrice}%'`;
+    extraQueryWhere += ` AND price>= ${data.minPrice}`;
   }
   if (data.maxPrice) {
-    extraQueryWhere += ` AND price>= '%${data.maxPrice}%'`;
+    extraQueryWhere += ` AND price>= ${data.maxPrice}`;
   }
   if (data.idCategory) {
     extraQueryWhere += ` AND c.id=${data.idCategory}`;
