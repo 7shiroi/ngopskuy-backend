@@ -35,12 +35,12 @@ exports.getProduct = async (req, res) => {
   } = req.query;
   const { idCategory } = req.query;
   name = name || '';
-  minPrice = parseInt(minPrice, 10) || 0;
-  maxPrice = parseInt(maxPrice, 10) || 1000000;
+  minPrice = parseInt(minPrice, 10);
+  maxPrice = parseInt(maxPrice, 10);
   page = parseInt(page, 10) || 1;
   limit = parseInt(limit, 10) || 12;
   const offset = (page - 1) * limit;
-  const dataName = ['name', 'priceMin', 'priceMax', 'id_category'];
+  const dataName = ['name', 'minPrice', 'maxPrice', 'id_category'];
   const data = {
     name, minPrice, maxPrice, idCategory, page, limit, offset,
   };
@@ -64,7 +64,7 @@ exports.getProduct = async (req, res) => {
     if (getDataByCategory.length < 0) {
       return responseHandler(res, 404, null, null, 'Data not found');
     }
-    return responseHandler(res, 200, 'List of products', getDataByCategory, null, null);
+    return responseHandler(res, 200, 'List of products', getDataByCategory, null, pageInfo);
   }
   const getDataProduct = await productModel.getProduct(data); // Get products
   if (getDataProduct.length < 1) {

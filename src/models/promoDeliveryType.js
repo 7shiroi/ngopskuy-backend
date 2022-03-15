@@ -37,15 +37,15 @@ exports.getData = (data) => new Promise((resolve, reject) => {
   });
 });
 
-exports.getDataById = (data) => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM promo_delivery_type WHERE id = ?', [data.id], (err, res) => {
+exports.getDataById = (id) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo_delivery_type WHERE id = ?', [id], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
 });
 
-exports.patchPromoDeliveryType = (data) => new Promise((resolve, reject) => {
-  db.query('UPDATE promo_delivery_type SET id_delivery_type = ? WHERE id = ?', [data.id_delivery_type, data.id], (err, res) => {
+exports.patchPromoDeliveryType = (id, data) => new Promise((resolve, reject) => {
+  db.query('UPDATE promo_delivery_type SET ? WHERE id = ?', [data, id], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });
@@ -60,6 +60,13 @@ exports.deletedPromoDeliveryType = (id) => new Promise((resolve, reject) => {
 
 exports.getListPromoDT = () => new Promise((resolve, reject) => {
   db.query('SELECT * FROM promo_delivery_type', (err, res) => {
+    if (err) reject(err);
+    resolve(res);
+  });
+});
+
+exports.getListPromoDTByIdPromo = (id_promo) => new Promise((resolve, reject) => {
+  db.query('SELECT * FROM promo_delivery_type WHERE id_promo = ?', [id_promo], (err, res) => {
     if (err) reject(err);
     resolve(res);
   });

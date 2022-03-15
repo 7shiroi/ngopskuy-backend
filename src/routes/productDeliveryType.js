@@ -8,6 +8,6 @@ prodDelivery.get('/', getProdDelType);
 prodDelivery.get('/:id', getProdDelTypeId);
 prodDelivery.post('/', verifyUser, addProdDelType);
 prodDelivery.patch('/:id', verifyUser, editProdDelType);
-prodDelivery.patch('/delete/:id', verifyUser, deleteProdDelType);
+prodDelivery.delete('/:id', verifyUser, deleteProdDelType);
 
 module.exports = prodDelivery;

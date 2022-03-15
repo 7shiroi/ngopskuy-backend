@@ -11,7 +11,7 @@ route.use('/auth', cors(corsOptions), require('./auth'));
 route.use('/user', cors(corsOptions), require('./user'));
 route.use('/product', cors(corsOptions), require('./product'));
 route.use('/product_size', cors(corsOptions), require('./productSize'));
-route.use('/prod_delivery_type', cors(corsOptions), require('./productDeliveryType'));
+route.use('/product_delivery_type', cors(corsOptions), require('./productDeliveryType'));
 route.use('/category', cors(corsOptions), require('./category'));
 route.use('/size', cors(corsOptions), require('./size'));
 route.use('/delivery_type', cors(corsOptions), require('./deliveryType'));
@@ -22,6 +22,7 @@ route.use('/promo', cors(corsOptions), require('./promo'));
 route.use('/promo_delivery_type', cors(corsOptions), require('./promoDeliveryType'));
 route.use('/promo_size', cors(corsOptions), require('./promoSize'));
 route.use('/profile', cors(corsOptions), require('./profile'));
+route.use('/customer-history', require('./custHistory'));
 
 route.get('/', (req, res) => responseHandler(res, 200, 'Backend is running well!'));
 

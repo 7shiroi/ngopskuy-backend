@@ -3,6 +3,7 @@ const responseHandler = require('../helpers/responseHandler');
 const { inputValidator, idValidator } = require('../helpers/validator');
 const transactionModel = require('../models/transaction');
 const userModel = require('../models/user');
+const productModel = require('../models/product');
 
 exports.getTransaction = async (req, res) => {
   try {
@@ -109,7 +110,6 @@ exports.getTransactionByProduct = async (req, res) => {
     };
     return responseHandler(res, 200, 'Transaction detail', getData, null, pageInfo);
   } catch (err) {
-    console.log(err);
     return responseHandler(res, 500, null, null, 'Unexpected Error!');
   }
 };
@@ -138,24 +138,37 @@ exports.addTransaction = async (req, res) => {
       {
         field: 'table_number', required: false, type: 'integer',
       },
-      {
-        field: 'total_price', required: true, type: 'price',
-      },
     ];
     const { error, data } = inputValidator(req, fillable);
-    if (error.length > 0) {
+    if (error.length > 3) {
       return res.status(400).json({
         success: false,
         error,
       });
     }
-    if (Object.keys(data).length < 8) {
+    data.id_user = req.user.id;
+    if (!data.is_delivered) {
+      data.is_delivered = 0;
+    }
+    if (!data.table_number) {
+      data.table_number = 0;
+    }
+    if (!data.payment_method) {
+      data.payment_method = 1;
+    }
+    data.id_transaction_status = 1;
+    if (Object.keys(data).length < 7) {
       return responseHandler(res, 400, null, null, 'Please fill in all the fields', null);
     }
     const checkUser = await userModel.getUser(data.id_user);
     if (checkUser.length < 1) {
       return responseHandler(res, 404, null, null, 'User not found', null);
     }
+    const checkProduct = await productModel.getProductById(data.id_product);
+    if (checkProduct.length < 1) {
+      return responseHandler(res, 404, null, null, 'Product not exist', null);
+    }
+    data.total_price = data.quantity * checkProduct[0].price;
     const addNewTransaction = await transactionModel.addTransaction(data);
     if (addNewTransaction.affectedRows < 1) {
       return responseHandler(res, 500, null, null, 'Unexpected error', null);
