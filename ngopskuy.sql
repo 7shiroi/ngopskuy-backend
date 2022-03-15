@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2022 at 03:20 PM
+-- Generation Time: Mar 15, 2022 at 08:45 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.3.33
 
@@ -39,9 +39,10 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
-(2, 'non coffee', '2022-03-11 19:49:46', '2022-03-11 12:49:37'),
-(3, 'desert', '2022-03-11 20:52:21', '2022-03-11 20:53:13');
+(1, 'Coffee', '2022-03-11 19:49:46', '2022-03-13 22:50:29'),
+(2, 'Non Coffee', '2022-03-11 19:49:46', '2022-03-13 22:50:46'),
+(3, 'Food', '2022-03-11 20:52:21', '2022-03-13 22:49:38'),
+(5, 'Add-on', '2022-03-13 22:50:02', NULL);
 
 -- --------------------------------------------------------
 
@@ -62,7 +63,8 @@ CREATE TABLE `delivery_type` (
 
 INSERT INTO `delivery_type` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (7, 'Delivery', '2022-03-10 14:08:36', NULL),
-(8, 'Take Away', '2022-03-10 14:21:44', NULL);
+(8, 'Take Away', '2022-03-10 14:21:44', NULL),
+(9, 'Dine in', '2022-03-14 17:46:46', NULL);
 
 -- --------------------------------------------------------
 
@@ -136,7 +138,7 @@ CREATE TABLE `product` (
 
 INSERT INTO `product` (`id`, `name`, `id_category`, `description`, `price`, `stock`, `delivery_hour_start`, `delivery_hour_end`, `image`, `is_deleted`, `created_at`, `updated_at`) VALUES
 (1, 'Kapal Api', 1, 'This is Kopi, Kapal Api', '15000.00', 5, '10:00:00', '23:00:00', '', 0, '2022-03-11 20:00:31', NULL),
-(2, 'Choco Milkshake', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001832/ngopskuy/uploads/product/product-1647001830490.png', 0, '2022-03-11 20:18:22', '2022-03-11 20:30:34'),
+(2, 'Choco Milkshake', 2, '100% non coffee choco shakers', '22000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001832/ngopskuy/uploads/product/product-1647001830490.png', 0, '2022-03-11 20:18:22', '2022-03-14 01:36:47'),
 (3, 'Choco Milkshakes', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 1, '2022-03-11 20:19:27', '2022-03-11 20:48:11'),
 (4, 'Choco Milkshakess', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-11 20:20:11', NULL),
 (5, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647001321/ngopskuy/uploads/product/product-1647001319431.png', 0, '2022-03-11 20:22:09', NULL),
@@ -145,7 +147,22 @@ INSERT INTO `product` (`id`, `name`, `id_category`, `description`, `price`, `sto
 (8, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:34:53', NULL),
 (9, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', '', 0, '2022-03-13 14:50:29', NULL),
 (10, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647154240/ngopskuy/uploads/product/product-1647154238488.png', 0, '2022-03-13 14:50:41', NULL),
-(11, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647154252/ngopskuy/uploads/product/product-1647154250086.png', 0, '2022-03-13 14:51:00', NULL);
+(11, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '20000.00', 7, '10:00:00', '23:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647154252/ngopskuy/uploads/product/product-1647154250086.png', 0, '2022-03-13 14:51:00', NULL),
+(12, 'Choco Shakes', 2, 'Choco shaky, so sweet!', '22000.00', 10, '06:00:00', '19:00:00', 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647186077/ngopskuy/uploads/product/product-1647186074510.png', 0, '2022-03-13 23:41:24', NULL),
+(13, 'French Fries', 3, 'Fried fries! Absolute crisp! Absolute tastiness!', '12000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:28:19', NULL),
+(14, 'French Fries Deluxe', 3, 'Fried fries! Absolute crisp! Absolute tastiness! 100% organic potatoes!', '18000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:35:59', NULL),
+(15, 'French Fries Deluxe', 3, 'Fried fries! Absolute crisp! Absolute tastiness! 100% organic potatoes!', '18000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:37:10', NULL),
+(16, 'French Fries Deluxe', 3, 'Fried fries! Absolute crisp! Absolute tastiness! 100% organic potatoes!', '18000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:38:43', NULL),
+(17, 'French Fries Deluxe', 3, 'Fried fries! Absolute crisp! Absolute tastiness! 100% organic potatoes!', '18000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:39:43', NULL),
+(18, 'French Fries Deluxe', 3, 'Fried fries! Absolute crisp! Absolute tastiness! 100% organic potatoes!', '18000.00', 6, '08:00:00', '19:00:00', '', 0, '2022-03-14 17:40:27', NULL),
+(19, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 17:53:58', NULL),
+(20, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 17:58:47', NULL),
+(21, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 18:03:23', NULL),
+(22, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 18:03:58', NULL),
+(23, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 18:04:14', NULL),
+(24, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 18:05:09', NULL),
+(25, 'Scrambled Egg', 3, 'Fresh egg fried with our special spices!', '12000.00', 4, '06:00:00', '19:00:00', '', 0, '2022-03-14 18:08:04', NULL),
+(26, 'Choco Milkshakesss', 2, '100% non coffee choco shakers', '15000.00', 7, '10:00:00', '23:00:00', '', 1, '2022-03-15 11:43:51', '2022-03-15 11:44:33');
 
 -- --------------------------------------------------------
 
@@ -161,6 +178,15 @@ CREATE TABLE `product_delivery_type` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `product_delivery_type`
+--
+
+INSERT INTO `product_delivery_type` (`id`, `id_product`, `id_delivery_type`, `created_at`, `updated_at`) VALUES
+(1, 25, 7, '2022-03-14 18:08:04', NULL),
+(2, 25, 9, '2022-03-14 18:08:04', NULL),
+(3, 25, 8, '2022-03-14 18:08:04', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -174,6 +200,21 @@ CREATE TABLE `product_size` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `product_size`
+--
+
+INSERT INTO `product_size` (`id`, `id_product`, `id_size`, `created_at`, `updated_at`) VALUES
+(1, 18, 2, '2022-03-14 17:40:27', NULL),
+(2, 18, 1, '2022-03-14 17:40:27', NULL),
+(3, 19, 1, '2022-03-14 17:53:58', NULL),
+(4, 20, 1, '2022-03-14 17:58:47', NULL),
+(5, 21, 1, '2022-03-14 18:03:23', NULL),
+(6, 22, 1, '2022-03-14 18:03:58', NULL),
+(7, 23, 1, '2022-03-14 18:04:14', NULL),
+(8, 24, 1, '2022-03-14 18:05:09', NULL),
+(9, 25, 1, '2022-03-14 18:08:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -201,7 +242,7 @@ CREATE TABLE `promo` (
 --
 
 INSERT INTO `promo` (`id`, `name`, `normal_price`, `description`, `promo_code`, `date_start`, `date_end`, `discount_value`, `image`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'Beef Break', '80000.00', 'Your super breakfast with smoked beef and tea', 'B3EDON2', '2022-03-11', '2022-03-13', 25, NULL, 0, '2022-03-12 00:17:45', NULL),
+(1, 'Beef Break', '80000.00', 'Your super breakfast with smoked beef and tea', 'B3EDON2', '2022-03-11', '2022-03-13', 25, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647270675/ngopskuy/uploads/promo/promo-1647270671971.png', 0, '2022-03-12 00:17:45', '2022-03-14 23:11:23'),
 (2, 'Smokey Steak', '60000.00', 'Steak and some juicy lemonade for your super lunch', 'SL21SLJL', '2022-03-09', '2022-03-11', 15, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647158764/ngopskuy/uploads/promo/promo-1647158762863.png', 0, '2022-03-13 15:49:18', '2022-03-13 16:06:06');
 
 -- --------------------------------------------------------
@@ -217,6 +258,14 @@ CREATE TABLE `promo_delivery_type` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `promo_delivery_type`
+--
+
+INSERT INTO `promo_delivery_type` (`id`, `id_promo`, `id_delivery_type`, `created_at`, `updated_at`) VALUES
+(1, 1, 9, '2022-03-14 23:28:21', '2022-03-14 23:34:55'),
+(2, 1, 7, '2022-03-14 23:53:52', NULL);
 
 -- --------------------------------------------------------
 
@@ -237,7 +286,8 @@ CREATE TABLE `promo_size` (
 --
 
 INSERT INTO `promo_size` (`id`, `id_promo`, `id_size`, `created_at`, `updated_at`) VALUES
-(2, 1, 2, '2022-03-12 00:20:46', '2022-03-12 00:34:47');
+(2, 1, 2, '2022-03-12 00:20:46', '2022-03-12 00:34:47'),
+(3, 1, 1, '2022-03-14 23:53:52', NULL);
 
 -- --------------------------------------------------------
 
@@ -259,8 +309,9 @@ CREATE TABLE `size` (
 --
 
 INSERT INTO `size` (`id`, `name`, `label`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'Regular', 'R', '250gr', '2022-03-11 21:07:59', '2022-03-11 21:14:38'),
-(2, 'Large', 'L', '350gr', '2022-03-11 21:13:28', NULL);
+(1, 'Regular', 'R', '250 gr', '2022-03-11 21:07:59', '2022-03-14 14:48:42'),
+(2, 'Large', 'L', '350 gr', '2022-03-11 21:13:28', '2022-03-14 14:48:45'),
+(4, 'Extra Large', 'XL', '500 gr', '2022-03-14 14:50:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -367,7 +418,7 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `password`, `display_name`, `gender`, `birth_date`, `address`, `phone_number`, `is_verified`, `image`, `id_role`, `is_deleted`, `created_at`, `update_at`) VALUES
 (1, 'first', 'user', 'firstuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$SX62ePbe4NzzpumkyEwi3Q$f0ibNogfFrWsKFAec2L++ynolQyjcx+PY1fagvRRBW0', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646936708/ngopskuy/uploads/user/user-1646936705683.png', 2, 0, '2022-03-10 01:14:16', '2022-03-11 02:25:07'),
 (17, 'Random', 'User', 'randomuser@mail.com', '$argon2i$v=19$m=4096,t=3,p=1$8k5pJS4CO8duWWZ8txEAYw$L7rmGrTcAHE+148CEmAxh3ZB2doRVZeSzevf5u+6fPU', NULL, NULL, NULL, NULL, NULL, 0, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1646931860/ngopskuy/uploads/user/user-1646931858181.png', 3, 0, '2022-03-11 01:04:19', NULL),
-(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-09', NULL, '0897449841', 1, 'https://res.cloudinary.com/fazztrackfw5/image/upload/v1647057401/ngopskuy/uploads/user/user-1647057399644.png', 3, 0, '2022-03-11 10:29:46', '2022-03-12 12:49:13'),
+(18, 'Bise', 'Feh', 'bisefeh455@toudrum.com', '$argon2i$v=19$m=4096,t=3,p=1$DLwFNJrsK6KVxQ8kUFjMSg$4e+c1S0A0umP9MDflN+5mlNk+Dj0YMlOvI6mDHfGshs', 'BiseF', 'male', '1998-08-21', 'Somewhere in the world st', '0897449841', 1, '', 3, 0, '2022-03-11 10:29:46', '2022-03-14 20:31:08'),
 (19, 'kelvin', 'wong', 'lucky7kelvin@yahoo.com', '$argon2i$v=19$m=4096,t=3,p=1$vSMoB88ZPMC8iZ3yElOJ0g$Pgn78DYcAA+8keWvAHXG+TqvZIHp/8darVcqJOmjmug', NULL, NULL, NULL, NULL, NULL, 0, NULL, 3, 0, '2022-03-13 21:16:58', NULL);
 
 -- --------------------------------------------------------
@@ -516,13 +567,13 @@ ALTER TABLE `user_role`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `delivery_type`
 --
 ALTER TABLE `delivery_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `otp`
@@ -540,19 +591,19 @@ ALTER TABLE `otp_type`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `product_delivery_type`
 --
 ALTER TABLE `product_delivery_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `product_size`
 --
 ALTER TABLE `product_size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `promo`
@@ -564,19 +615,19 @@ ALTER TABLE `promo`
 -- AUTO_INCREMENT for table `promo_delivery_type`
 --
 ALTER TABLE `promo_delivery_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `promo_size`
 --
 ALTER TABLE `promo_size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `size`
 --
 ALTER TABLE `size`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `transaction`
