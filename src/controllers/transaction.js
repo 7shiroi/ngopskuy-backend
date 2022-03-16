@@ -3,21 +3,27 @@ const responseHandler = require('../helpers/responseHandler');
 const { inputValidator, idValidator } = require('../helpers/validator');
 const transactionModel = require('../models/transaction');
 const userModel = require('../models/user');
-const productModel = require('../models/product');
 
 exports.getTransaction = async (req, res) => {
   try {
-    let { page, limit } = req.query;
+    let {
+      page, limit,
+    } = req.query;
+    const {
+      productSearch, userSearch,
+    } = req.query;
     page = parseInt(page, 10) || 1;
     limit = parseInt(limit, 10) || 5;
     const url = `${APP_URL}/transaction`;
     const offset = (page - 1) * limit;
-    const data = { page, limit, offset };
+    const data = {
+      productSearch, userSearch, page, limit, offset,
+    };
     const getData = await transactionModel.getTransaction(data);
     if (getData.length < 1) {
       return responseHandler(res, 200, 'Data not available', null, null, null);
     }
-    const getTotalData = await transactionModel.totalTransaction();
+    const getTotalData = await transactionModel.totalTransaction(data);
     const total = getTotalData[0].totalData;
     const last = Math.ceil(total / limit);
     const pageInfo = {
@@ -121,13 +127,7 @@ exports.addTransaction = async (req, res) => {
         field: 'id_user', required: false, type: 'integer',
       },
       {
-        field: 'id_product', required: true, type: 'integer',
-      },
-      {
         field: 'id_transaction_status', required: true, type: 'integer',
-      },
-      {
-        field: 'quantity', required: true, type: 'integer',
       },
       {
         field: 'payment_method', required: true, type: 'integer',
@@ -140,7 +140,7 @@ exports.addTransaction = async (req, res) => {
       },
     ];
     const { error, data } = inputValidator(req, fillable);
-    if (error.length > 3) {
+    if (error.length > 0) {
       return res.status(400).json({
         success: false,
         error,
@@ -157,20 +157,12 @@ exports.addTransaction = async (req, res) => {
       data.payment_method = 1;
     }
     data.id_transaction_status = 1;
-    if (Object.keys(data).length < 7) {
-      return responseHandler(res, 400, null, null, 'Please fill in all the fields', null);
-    }
     const checkUser = await userModel.getUser(data.id_user);
     if (checkUser.length < 1) {
       return responseHandler(res, 404, null, null, 'User not found', null);
     }
-    const checkProduct = await productModel.getProductById(data.id_product);
-    if (checkProduct.length < 1) {
-      return responseHandler(res, 404, null, null, 'Product not exist', null);
-    }
-    data.total_price = data.quantity * checkProduct[0].price;
     const addNewTransaction = await transactionModel.addTransaction(data);
-    if (addNewTransaction.affectedRows < 1) {
+    if (addNewTransaction.affectedRows === 0) {
       return responseHandler(res, 500, null, null, 'Unexpected error', null);
     }
     const getNewData = await transactionModel.getTransactionId(addNewTransaction.insertId);
