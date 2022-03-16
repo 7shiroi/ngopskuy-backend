@@ -9,7 +9,7 @@ exports.getCustomerHistory = async (req, res) => {
     const { id } = req.user;
     let { page, limit } = req.query;
     page = parseInt(page, 10) || 1;
-    limit = parseInt(limit, 10) || 9;
+    limit = parseInt(limit, 10) || 12;
     const offset = (page - 1) * limit;
     const data = {
       page, limit, offset,
