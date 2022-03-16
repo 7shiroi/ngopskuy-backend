@@ -4,6 +4,13 @@
 A backend program for Ngopskuy website.
 A e-commerce website which sell coffees and foods.
 
+### Contributors
+<a href="https://github.com/7shiroi/ngopskuy-backend/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=7shiroi/ngopskuy-backend" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
 ### Endpoints
 | **url** | **Method** | **Description** |
 | ------------- | ------------- | ------------- |
