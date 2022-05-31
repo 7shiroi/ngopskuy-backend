@@ -7,6 +7,7 @@ const { FRONT_END_URL } = process.env;
 const corsOptions = {
   origin: FRONT_END_URL,
 };
+console.log(FRONT_END_URL);
 route.use('/auth', cors(corsOptions), require('./auth'));
 route.use('/user', cors(corsOptions), require('./user'));
 route.use('/product', cors(corsOptions), require('./product'));
